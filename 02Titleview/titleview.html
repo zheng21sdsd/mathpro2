@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathPro</title>
+    <link rel="stylesheet" href="titleview.css">
+    <style>
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="user-info">
+            <img class="avatar-img" src="../../picture/avatar.png" alt="Avatar" onclick="openModal('avatar-modal')">
+            <div class="username">MathPro</div>
+        </div>
+        <ul>
+            <li data-content="这里是账号管理的内容">个人信息</li>
+            <li data-content="这里是收藏夹的内容">收藏夹</li>
+            <li data-content="这里是错题本的内容">错题本</li>
+        </ul>
+        <button class="logout-btn">退出登录</button>
+    </div>
+    <div class="container">
+    <div class="top-nav">
+        <a href="#"><button class="button">训练场</button></a>
+        <a href="../04ranking/ranking.html"><button class="button">排行榜</button></a>
+        <a href="../05mindmap/mindmap.html"><button class="button">思维导图</button></a>
+        <a>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="请输入">
+                <button class="search-button">搜索</button>
+            </div>
+            <div class="select-container">
+                <div class="select-half">
+                    <div class="text01">知识点</div>
+                    <select class="select-box">
+                        <option value="knowledge1">1</option>
+                        <option value="knowledge2">2</option>
+                        <option value="knowledge3">3</option>
+                    </select>
+                </div>
+                <div class="select-half">
+                    <div class="text01">难易程度</div>
+                    <select class="select-box">
+                        <option value="difficult1">1</option>
+                        <option value="difficult2">2</option>
+                        <option value="difficult3">3</option>
+                        <option value="difficult4">4</option>
+                        <option value="difficult5">5</option>
+                    </select>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="back-button" onclick="goBack()"></div>
+    
+    <div class="titleview">
+        <h1>题目详情</h1>
+    </div>
+
+    <div class="submission-form">
+    <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
+    <!-- 文件上传 -->
+    <input type="file" class="file-input" id="file-upload" accept="image/*">
+    <!-- 图片预览 -->
+    <div class="image-preview" id="image-preview"></div>
+    <!-- 提交按钮 -->
+    <button class="submit-button" id="submit-button">提交</button>
+</div>
+
+    
+    </div>
+
+    <script>
+        // 文件上传处理
+        const fileUpload = document.getElementById('file-upload');
+        const imagePreview = document.getElementById('image-preview');
+        let imageFiles = [];
+    
+        fileUpload.addEventListener('change', function() {
+          const files = Array.from(this.files);
+          files.forEach(file => {
+            if (file.type.startsWith('image/')) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+    
+                // 创建删除按钮
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '删除';
+                deleteButton.className = 'delete-button';
+                deleteButton.onclick = function() {
+                  imageFiles = imageFiles.filter(image => image.name !== file.name);
+                  imagePreview.removeChild(imgContainer);
+                };
+    
+                // 图片容器
+                const imgContainer = document.createElement('div');
+                imgContainer.appendChild(img);
+                imgContainer.appendChild(deleteButton);
+                imagePreview.appendChild(imgContainer);
+    
+                // 添加到图片文件数组
+                imageFiles.push(file);
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        });
+    
+        // 提交按钮事件
+        const submitButton = document.getElementById('submit-button');
+        submitButton.addEventListener('click', function() {
+          const textValue = document.getElementById('text-answer').value.trim();
+          if (textValue === '' && imageFiles.length === 0) {
+            alert('请输入文字题答案或上传图片');
+            return;
+          }
+          
+          // 提交逻辑
+          // 这里可以添加提交逻辑，比如通过 AJAX 将数据提交给服务器
+          alert('提交成功！');
+        });
+    </script>
+
+    <script>
+        function goBack() {
+          window.history.back(); // JavaScript方法返回上一页
+        }
+    </script>
+
+    <div id="avatar-modal" class="modal">
+        <div class="modal-content">
+            <h2>Change Avatar</h2>
+            <input type="file" accept="image/*"> 
+            <button onclick="closeModal('avatar-modal')">Close</button>
+        </div>
+    </div>
+    
+
+    
+    <script>
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
+        }
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+    </script>
+
+    <script>
+        const menuItems = document.querySelectorAll('.menu-item');
+        const infoDisplay = document.querySelector('.info-area-content');
+        const accountForm = document.querySelector('.account-form');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.textContent === '账号管理') {
+                    accountForm.style.display = 'block';
+                } else {
+                    accountForm.style.display = 'none';
+                }
+            });
+        });
+        const form = document.getElementById('accountForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('信息已更新！');
+        });
+    </script>
+</body>
+</html>
+
