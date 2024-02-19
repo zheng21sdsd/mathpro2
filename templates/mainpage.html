@@ -9,7 +9,7 @@
     <style>
     </style>
 </head>
-<body>
+<body class="Body">
     <div class="sidebar">
         <div class="user-info">
             <img class="avatar-img" src="static/uploads/avatar2.jpg" alt="Avatar" onclick="openModal('avatar-modal')">
@@ -61,7 +61,7 @@
         <div class="title_headline">
             <h1>巩固加强 题目推荐</h1>
             <button onclick="refreshQuestionList()" class="title_refresh">刷新</button>
-        </div>、
+        </div>
 {#        <style>#}
 {#        .knowledge-card {#}
 {#            text-align: center;#}
@@ -259,7 +259,28 @@
             alert('信息已更新！');
         });
     </script>
+    <script>
+        function refreshQuestionList() {
+            $.ajax({
+                url: '/get_updated_questions', // replace with your actual API endpoint
+                type: 'GET',
+                success: function(response) {
+                    // Assuming the server returns an HTML string with the updated list of questions
+                    // Replace the current list of questions with the updated list
+                    alert(response)
+                    // 控制台输出
 
+                   $('.knowledge-card').html(response);
+                    //$('.Body').html(response);
+                    alert('题目列表已刷新！');
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    alert('Failed to refresh the question list.');
+                }
+            });
+}
+</script>
 </body>
 </html>
 

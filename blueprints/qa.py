@@ -21,6 +21,7 @@ bp = Blueprint('qa',__name__,url_prefix='/')
 ##################### mainpage页面
 @bp.route('/',methods = ['GET','POST'])
 def index():
+    print(1)
     if request.method == 'GET':
         ### 从question_answer表中获取所有数据
         questions = db.session.query(QuestionAnswerModel).all()
@@ -40,6 +41,27 @@ def index():
         # return render_template('mainpage.html',questions)
 
     return render_template('mainpage.html')
+
+### 更新题目
+@bp.route('/get_updated_questions', methods=['GET'])
+def get_updated_questions():
+    print(2)
+    # Query the database to get the updated list of questions
+    # This is just a placeholder, replace with your actual query
+    ### 推荐算法
+    #### 1.获取题目未加入限定条件（即获取全部题目 需修改）
+    questions = db.session.query(QuestionAnswerModel).all()
+    #### 2.xxxx
+    #### 3.xxxx
+
+    # Render the questions to an HTML string using a Jinja2 template
+    # You need to create a new template 'questions.html' for this
+    ##
+    # html_string = render_template('mainpage.html', questions=questions)
+    # questions_data = [question.to_dict() for question in questions]
+    # Return the HTML string
+    ### questions为推荐题目
+    return render_template('mainpage.html', questions=questions)
 
 ##################### 存储头像  放到数据库中
 @bp.route('/ranking',methods = ['GET','POST'])
