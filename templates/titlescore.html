@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathPro</title>
-    <link rel="stylesheet" href="static/css/titlescore.css">
+{#    <link rel="stylesheet" href="static/css/titlescore.css">#}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/titlescore.css')}}">
+    <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
+
     <style>
     </style>
 </head>
@@ -23,9 +26,9 @@
     </div>
     <div class="container">
     <div class="top-nav">
-        <a href="#"><button class="button">训练场</button></a>
-        <a href="ranking.html"><button class="button">排行榜</button></a>
-        <a href="mindmap.html"><button class="button">思维导图</button></a>
+        <a href="{{ url_for('qa.practicecheck') }}"><button class="button">训练场</button></a>
+        <a href="{{ url_for('qa.ranking') }}"><button class="button">排行榜</button></a>
+        <a href="{{ url_for('qa.mindmap') }}"><button class="button">思维导图</button></a>
         <a>
             <div class="search-container">
                 <input type="text" class="search-input" placeholder="请输入">

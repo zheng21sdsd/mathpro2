@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathPro</title>
+    <link rel="stylesheet" href="challenge.css">
+    <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
+
+    <style>
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="countdown" id="timer">作答用时：00:00</div>
+        <div class="user-info">用户名</div>
+    </div>
+    <script>
+        var timerElement = document.getElementById('timer');
+        var timerSeconds = 0;
+        var timerInterval;
+        // 更新计时器显示
+        function updateTimer() {
+            var minutes = Math.floor(timerSeconds / 60);
+            var seconds = timerSeconds % 60;
+            var timeString = padZero(minutes) + ':' + padZero(seconds);
+            timerElement.textContent = '作答用时：' + timeString;
+            timerSeconds++;
+        }
+        // 添加前导零
+        function padZero(num) {
+            return (num < 10 ? '0' : '') + num;
+        }
+        // 页面加载时启动计时器
+        window.onload = function() {
+            timerInterval = setInterval(updateTimer, 1000);
+        };
+        // 点击提交按钮时，停止计时
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        // 点击提交按钮时，显示用时时间
+        function submitAnswers() {
+            stopTimer();
+            alert('作答用时：' + timerElement.textContent.split('：')[1]);
+        }
+        function pauseCountdown() {
+            clearInterval(timerInterval);
+            timerInterval = null; // 将计时器置为null，防止重复点击后产生多个计时器
+        }
+
+        // 点击继续计时按钮时，重新启动计时器
+        function resumeCountdown() {
+            if (!timerInterval) { // 如果计时器不存在，才重新启动计时器
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        }
+    </script>
+    <div class="back-button" onclick="goBack()"></div>
+    <script>
+        function goBack() {
+          window.history.back(); // JavaScript方法返回上一页
+        }
+    </script>
+    <div class="content">
+        <div class="question-area" id="questionArea">
+            <div class="question" id="question1">
+                <h3>题目1</h3>
+                <div class="titleview">
+                    <h1>题目详情</h1>
+                </div>
+                <div class="submission-form">
+                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
+                <input type="file" class="file-input" id="file-upload" accept="image/*">
+                <div class="image-preview" id="image-preview"></div>
+            </div>
+            <div class="question" id="question2">
+                <h3>题目2</h3>
+                <div class="titleview">
+                    <h1>题目详情</h1>
+                </div>
+                <div class="submission-form">
+                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
+                <input type="file" class="file-input" id="file-upload" accept="image/*">
+                <div class="image-preview" id="image-preview"></div>
+            </div>
+            <div class="question" id="question3">
+                <h3>题目3</h3>
+                <div class="titleview">
+                    <h1>题目详情</h1>
+                </div>
+                <div class="submission-form">
+                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
+                <input type="file" class="file-input" id="file-upload" accept="image/*">
+                <div class="image-preview" id="image-preview"></div>
+            </div>
+            <div class="question" id="question4">
+                <h3>题目4</h3>
+                <div class="titleview">
+                    <h1>题目详情</h1>
+                </div>
+                <div class="submission-form">
+                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
+                <input type="file" class="file-input" id="file-upload" accept="image/*">
+                <div class="image-preview" id="image-preview"></div>>
+            </div>
+            <div class="question" id="question5">
+                <h3>题目5</h3>
+                <div class="titleview">
+                    <h1>题目详情</h1>
+                </div>
+                <div class="submission-form">
+                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
+                <input type="file" class="file-input" id="file-upload" accept="image/*">
+                <div class="image-preview" id="image-preview"></div>
+            </div>
+            <div class="question" id="question6">
+                <h3>题目6</h3>
+                <div class="titleview">
+                    <h1>题目详情</h1>
+                </div>
+                <div class="submission-form">
+                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
+                <input type="file" class="file-input" id="file-upload" accept="image/*">
+                <div class="image-preview" id="image-preview"></div>
+            </div>
+            <div class="question" id="question7">
+                <h3>题目7</h3>
+                <div class="titleview">
+                    <h1>题目详情</h1>
+                </div>
+                <div class="submission-form">
+                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
+                <input type="file" class="file-input" id="file-upload" accept="image/*">
+                <div class="image-preview" id="image-preview"></div>
+            </div>
+            <!-- 添加更多题目 -->
+        </div>
+    </div>
+    <div class="question-number">
+        <h2>作答详情</h2>
+        <button class="time-button" onclick="pauseCountdown()">暂停计时</button>
+        <button class="time-button" onclick="resumeCountdown()">继续计时</button>
+        <ul class="question-list">
+            <li class="selected" onclick="scrollToQuestion(1)">1</li>
+            <li class="selected" onclick="scrollToQuestion(2)">2</li>
+            <li class="selected" onclick="scrollToQuestion(3)">3</li>
+            <li class="selected" onclick="scrollToQuestion(4)">4</li>
+            <li class="selected" onclick="scrollToQuestion(5)">5</li>
+            <li class="selected" onclick="scrollToQuestion(6)">6</li>
+            <li class="selected" onclick="scrollToQuestion(7)">7</li>
+            <!-- 其他题目 -->
+        </ul>
+        
+        <div class="action-buttons">
+            <button onclick="saveAnswers()">保存</button>
+            <button onclick="submitAnswers()">提交</button>
+        </div>
+    </div>
+
+  
+    <script>
+        // 文件上传处理
+        const fileUpload = document.getElementById('file-upload');
+        const imagePreview = document.getElementById('image-preview');
+        let imageFiles = [];
+        fileUpload.addEventListener('change', function() {
+          const files = Array.from(this.files);
+          files.forEach(file => {
+            if (file.type.startsWith('image/')) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                // 创建删除按钮
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '删除';
+                deleteButton.className = 'delete-button';
+                deleteButton.onclick = function() {
+                  imageFiles = imageFiles.filter(image => image.name !== file.name);
+                  imagePreview.removeChild(imgContainer);
+                };
+                const imgContainer = document.createElement('div');
+                imgContainer.appendChild(img);
+                imgContainer.appendChild(deleteButton);
+                imagePreview.appendChild(imgContainer);
+                imageFiles.push(file);
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        });
+        const submitButton = document.getElementById('submit-button');
+        submitButton.addEventListener('click', function() {
+          const textValue = document.getElementById('text-answer').value.trim();
+          if (textValue === '' && imageFiles.length === 0) {
+            alert('请输入文字题答案或上传图片');
+            return;
+          }
+          alert('提交成功！');
+        });
+        function scrollToQuestion(questionNumber) {
+            var question = document.getElementById('question' + questionNumber);
+            question.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+    </script>
+    
+</body>
+</html>
+

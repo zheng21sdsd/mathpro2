@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathPro</title>
+    <link rel="stylesheet" href="collection.css">
+    <link rel="stylesheet" href="{{ url_for('static',filename = 'css/collection.css') }}">
+    <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
+
+{#    <link rel="stylesheet" href="{{ url_for('static',filename='css/personalpage.css')}}">#}
+
+
+
+
+    <style>
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="user-info">
+            <img class="avatar-img" src="../../picture/avatar.png" alt="Avatar" onclick="openModal('avatar-modal')">
+            <div class="username">MathPro</div>
+        </div>
+        <ul>
+            <a href="../09personalinformation/personalinformation.html"><li>个人信息</li></a>
+            <a href="../10collection/collection.html"><li>收藏夹</li></a>
+            <a href="../11Wrongtitlebook/Wrongtitlebook.html"><li>错题本</li></a>
+        </ul>
+        <button class="logout-btn">退出登录</button>
+    </div>
+    <div class="container">
+    <div class="top-nav">
+        <a href="../06practice/practicecheck.html"><button class="button">训练场</button></a>
+        <a href="../04ranking/ranking.html"><button class="button">排行榜</button></a>
+        <a href="../05mindmap/mindmap.html"><button class="button">思维导图</button></a>
+        <a>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="请输入">
+                <button class="search-button">搜索</button>
+            </div>
+            <div class="select-container">
+                <div class="select-half">
+                    <div class="text01">知识点</div>
+                    <select class="select-box">
+                        <option value="knowledge1">1</option>
+                        <option value="knowledge2">2</option>
+                        <option value="knowledge3">3</option>
+                    </select>
+                </div>
+                <div class="select-half">
+                    <div class="text01">难易程度</div>
+                    <select class="select-box">
+                        <option value="difficult1">1</option>
+                        <option value="difficult2">2</option>
+                        <option value="difficult3">3</option>
+                        <option value="difficult4">4</option>
+                        <option value="difficult5">5</option>
+                    </select>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="back-button" onclick="goBack()"></div>
+    <div class="title">
+{#   分页 前端用item 不分页用属性就好     {% for question in questions.items %}#}
+        {% for question in questions %}
+            question.id == {{ question.id }}
+        <div class="knowledge-card">
+
+{#             <a href="{{ url_for('qa.titleview') }}"><img id="{{ question.id }}" src="{{ question.question_path }}" alt="题目图片" onclick="sendImageInfo(this.id)"></a>#}
+{#            <a href="{{ url_for('qa.titleview')+'?'+{{question.id}} }}"><img src="{{ question.question_path }}" alt="题目图片"></a>#}
+{#            question.id == {{ question.id }}#}
+            <a href="{{ url_for('qa.titleview', id=question.id) }}"><h2 id="questionTitle">{{ question.content }}</h2><img src="{{ question.question_path }}" alt="题目图片"></a>
+{#            <a href="titleview.html"><img src="{{ question.question_path }}" alt="题目图片"></a>#}
+            <div class="knowledge-button-container">
+                <button type="submit" class="knowledge-button" onclick="CancelToFavorites(event,{{ question.id }})">取消收藏</button>
+                <a href="{{ url_for('qa.titleview', id=question.id) }}"><button class="knowledge-button">查看</button></a>
+            </div>
+        </div>
+        {% endfor %}
+{#        分页#}
+{#        <div class="pagination">#}
+{#            {% if questions.has_prev %}#}
+{#                <a href="{{ url_for('qa.index',page=questions.prev_num) }}">Previous</a>#}
+{#            {% endif %}#}
+{#            <span>Page{{ questions.page }} of {{ questions.pages }}</span>#}
+{#            {% if questions.has_next %}#}
+{#                <a href="{{ url_for('qa.index',page=questions.next_num) }}">Next</a>#}
+{#            {% endif %}#}
+{#        </div>#}
+
+{#        <div class="knowledge-card">#}
+{#            <h2>题目标题</h2>#}
+{#            <p>题目内容...</p>#}
+{#            <div class="knowledge-button-container">#}
+{#                <button class="knowledge-button" onclick="addToFavorites()">取消收藏</button>#}
+{#                <a href="collectionview.html"><button class="knowledge-button" onclick="viewDetails()">查看</button></a>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="knowledge-card">#}
+{#            <h2>题目标题</h2>#}
+{#            <p>题目内容...</p>#}
+{#            <div class="knowledge-button-container">#}
+{#                <button class="knowledge-button" onclick="addToFavorites()">取消收藏</button>#}
+{#                <a href="collectionview.html"><button class="knowledge-button" onclick="viewDetails()">查看</button></a>#}
+{#            </div>#}
+{#        </div>#}
+    </div>
+
+
+    <div id="avatar-modal" class="modal">
+        <div class="modal-content">
+            <h2>Change Avatar</h2>
+            <input type="file" accept="image/*"> 
+            <button onclick="closeModal('avatar-modal')">Close</button>
+        </div>
+    </div>
+    <script>
+        function goBack() {
+          window.history.back(); // JavaScript方法返回上一页
+        }
+    </script>
+    <script>
+        function CancelToFavorites(event, questionId) {
+        // 阻止表单默认提交行为
+        event.preventDefault();
+      // 添加到收藏夹的逻辑  用Jquery的&。ajax（）函数来发送一个POST请求
+       //var questionId="{{ questions.id }}"; // 这里填写你需要收藏的问题的ID
+        {#alert('进来了')#}
+
+        $.ajax({
+            url: '/cancel_to_favorites', // 这里填写你的后端接口地址
+            type: 'POST',
+            data: JSON.stringify({id: questionId}),
+            contentType: 'application/json',
+            success: function(response) {
+                // 这里处理服务器返回的响应
+                if (response.code == 200){
+                    // 收藏成功
+                    alert(response.message);
+
+                } else {
+                    alert(response.message);
+                }
+
+            },
+            error: function(error) {
+                // 这里处理请求失败的情况
+                alert("请求失败！")
+                console.error('Error:', error);
+            }
+        });
+    }
+    </script>
+
+    
+    <script>
+        // 显示模态框
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
+        }
+        // 关闭模态框
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+    </script>
+
+    <script>
+        const menuItems = document.querySelectorAll('.menu-item');
+        const infoDisplay = document.querySelector('.info-area-content');
+        const accountForm = document.querySelector('.account-form');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.textContent === '账号管理') {
+                    accountForm.style.display = 'block';
+                } else {
+                    accountForm.style.display = 'none';
+                }
+            });
+        });
+        // 账号管理表单提交逻辑
+        const form = document.getElementById('accountForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            // 处理表单提交的逻辑，可以使用 JavaScript 发送到后端进行处理
+            // 这里只是示例，没有实际的后端交互
+            alert('信息已更新！');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathPro</title>
+    <link rel="stylesheet" href="wrongtitleview.css">
+    <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
+
+    <style>
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="user-info">
+            <img class="avatar-img" src="../../picture/avatar.png" alt="Avatar" onclick="openModal('avatar-modal')">
+            <div class="username">MathPro</div>
+        </div>
+        <ul>
+            <a href="../09personalinformation/personalinformation.html"><li>个人信息</li></a>
+            <a href="../10collection/collection.html"><li>收藏夹</li></a>
+            <a href="../11Wrongtitlebook/Wrongtitlebook.html"><li>错题本</li></a>
+        </ul>
+        <button class="logout-btn">退出登录</button>
+    </div>
+    <div class="container">
+    <div class="top-nav">
+        <a href="../06practice/practicecheck.html"><button class="button">训练场</button></a>
+        <a href="../04ranking/ranking.html"><button class="button">排行榜</button></a>
+        <a href="../05mindmap/mindmap.html"><button class="button">思维导图</button></a>
+        <a>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="请输入">
+                <button class="search-button">搜索</button>
+            </div>
+            <div class="select-container">
+                <div class="select-half">
+                    <div class="text01">知识点</div>
+                    <select class="select-box">
+                        <option value="knowledge1">1</option>
+                        <option value="knowledge2">2</option>
+                        <option value="knowledge3">3</option>
+                    </select>
+                </div>
+                <div class="select-half">
+                    <div class="text01">难易程度</div>
+                    <select class="select-box">
+                        <option value="difficult1">1</option>
+                        <option value="difficult2">2</option>
+                        <option value="difficult3">3</option>
+                        <option value="difficult4">4</option>
+                        <option value="difficult5">5</option>
+                    </select>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="back-button" onclick="goBack()"></div>
+    <div class="right-aligned">得分：XX</div>
+    <div class="answers">
+        <div class="answer-box">题目答案</div>
+        <div class="answer-box">我的答案</div>
+        <div class="knowledge-button-container">
+            <button class="knowledge-button">移除错题本</button>
+            <a href="../02Titleview/titleview.html"><button class="knowledge-button">重做</button></a>
+        </div>
+    </div>
+    
+
+    </div>
+    </div>
+
+    <div id="avatar-modal" class="modal">
+        <div class="modal-content">
+            <h2>Change Avatar</h2>
+            <input type="file" accept="image/*"> 
+            <button onclick="closeModal('avatar-modal')">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        function addToFavorites() {
+            alert("已收藏！");
+        }
+    </script>
+    <script>
+        function goBack() {
+          window.history.back(); // JavaScript方法返回上一页
+        }
+    </script>
+    
+    <script>
+        // 显示模态框
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
+        }
+        // 关闭模态框
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+    </script>
+
+    <script>
+        const menuItems = document.querySelectorAll('.menu-item');
+        const infoDisplay = document.querySelector('.info-area-content');
+        const accountForm = document.querySelector('.account-form');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.textContent === '账号管理') {
+                    accountForm.style.display = 'block';
+                } else {
+                    accountForm.style.display = 'none';
+                }
+            });
+        });
+        // 账号管理表单提交逻辑
+        const form = document.getElementById('accountForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            // 处理表单提交的逻辑，可以使用 JavaScript 发送到后端进行处理
+            // 这里只是示例，没有实际的后端交互
+            alert('信息已更新！');
+        });
+    </script>
+</body>
+</html>

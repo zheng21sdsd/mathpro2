@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathPro</title>
+{#    <link rel="stylesheet" href="personalinformation.css">#}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/personalinformation.css')}}">
+    <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
+
+    <style>
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="user-info">
+            <img class="avatar-img" src="../../picture/avatar.png" alt="Avatar" onclick="openModal('avatar-modal')">
+            <div class="username">MathPro</div>
+        </div>
+        <ul>
+            <a href="{{ url_for('qa.personalinformation') }}"><li data-content="这里是账号管理的内容">个人信息</li></a>
+            <a href="{{ url_for('qa.collection') }}"><li data-content="这里是收藏夹的内容">收藏夹</li></a>
+            <a href="{{ url_for('qa.wrongtitlebook') }}"><li data-content="这里是错题本的内容">错题本</li></a>
+        </ul>
+
+        <button class="logout-btn">退出登录</button>
+    </div>
+
+    <div class="container">
+    <div class="top-nav">
+        <a href="../06practice/practicecheck.html"><button class="button">训练场</button></a>
+        <a href="../04ranking/ranking.html"><button class="button">排行榜</button></a>
+        <a href="../05mindmap/mindmap.html"><button class="button">思维导图</button></a>
+        <a>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="请输入">
+                <button class="search-button">搜索</button>
+            </div>
+            <div class="select-container">
+                <div class="select-half">
+                    <div class="text01">知识点</div>
+                    <select class="select-box">
+                        <option value="knowledge1">1</option>
+                        <option value="knowledge2">2</option>
+                        <option value="knowledge3">3</option>
+                    </select>
+                </div>
+                <div class="select-half">
+                    <div class="text01">难易程度</div>
+                    <select class="select-box">
+                        <option value="difficult1">1</option>
+                        <option value="difficult2">2</option>
+                        <option value="difficult3">3</option>
+                        <option value="difficult4">4</option>
+                        <option value="difficult5">5</option>
+                    </select>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="back-button" onclick="goBack()"></div>
+    <div class="container">
+        <div class="account-form">
+            <h2>个人信息</h2>
+            <form id="accountForm" action="/personalinformation"  method="POST">
+                <label for="nickname">昵称</label>
+                <input type="text" id="nickname" name="nickname" placeholder="英文加数字（10-12位）" value="{{ user.name }}" required><br>
+                <label for="password">密码</label>
+                <input type="text" id="password" name="password" placeholder="英文加数字（10-12位）" value="{{ user.password }}"  required><br>
+                <label for="email">邮箱</label>
+{#                email={{ user.email }}#}
+                <input type="email" id="email" name="email" placeholder="请输入邮箱" value ="{{ user.email }}" required><br>
+                <label for="school">学校</label>
+{#                学校 = {{ user.school }}#}
+                <input type="text" id="school" name="school" placeholder="请输入学校名称" value = "{{ user.school }}" required><br>
+                <label for="major">专业</label>
+{#                专业 = {{ user.major }}#}
+                <input type="text" id="major" name="major" placeholder="请输入专业" value="{{ user.major }}" required><br>
+                <!-- 更多用户信息字段... -->
+                <button class="submit-button" type="submit">保存</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+    <script>
+        function goBack() {
+          window.history.back(); // JavaScript方法返回上一页
+        }
+    </script>
+
+    <div id="avatar-modal" class="modal">
+        <div class="modal-content">
+            <h2>Change Avatar</h2>
+            <input type="file" accept="image/*"> 
+            <button onclick="closeModal('avatar-modal')">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
+        }
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+    </script>
+
+    <script>
+        const menuItems = document.querySelectorAll('.menu-item');
+        const infoDisplay = document.querySelector('.info-area-content');
+        const accountForm = document.querySelector('.account-form');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.textContent === '账号管理') {
+                    accountForm.style.display = 'block';
+                } else {
+                    accountForm.style.display = 'none';
+                }
+            });
+        });
+        const form = document.getElementById('accountForm');
+        form.addEventListener('submit', function(event) {
+            //event.preventDefault();
+            alert('信息已更新！');
+        });
+    </script>
+</body>
+</html>
+

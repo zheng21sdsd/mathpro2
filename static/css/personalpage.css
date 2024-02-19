@@ -327,8 +327,8 @@ body {
     margin-left: 100px;
     transition: transform 0.3s ease;
     cursor: pointer;
-    width: 1200px;
-    height: 130px;
+    width: 1000px;
+    height: 600px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -366,4 +366,10 @@ body {
 
 .knowledge-button:hover {
     background-color: #4e83d8f1;
+}
+img{
+    width: auto;
+    height: auto;
+    max-width: 80%;
+    max-height: 100%;
 }

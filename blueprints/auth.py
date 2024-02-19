@@ -27,7 +27,9 @@ def register():
             email = form.email.data
             password = form.password.data
             username = form.username.data
-            user = UserModel(email = email,password = generate_password_hash(password),name=username)
+            # 取消掉加密
+            # user = UserModel(email = email,password = generate_password_hash(password),name=username)
+            user = UserModel(email = email,password = password,name=username)
             db.session.add(user)
             db.session.commit()
             return redirect(url_for('auth.login'))
@@ -52,6 +54,8 @@ def login():
             user = UserModel.query.filter_by(email=email).first()
             ## 没有用户   返回登陆页面
             if not user:
+                print('---------------------------------没有用户---------------------------------')
+                print('---------------------------------跳转到注册页面---------------------------------')
                 return redirect(url_for('auth.register'))
             else:
                 ### 不加密
@@ -63,16 +67,16 @@ def login():
                     return redirect(url_for('auth.login'))
                 ### 加密
 
-                ### 就是邮箱存在，这时候我们得进行密码验证，又因为我们对密码进行了加密，所以得进行一系列的操作才行
-                # if check_password_hash(user.user_password,password):
-                #     # cooike 不适合存储太多数据，只适合存储少量数据  饼干碎屑 一般用于用户授权信息
-                #     # flask的session是经过加密后存储在cookie中的
-                #     session['user_id'] = user.id
-                #     return redirect('/')  # 找到根目录 就可以完成
-                # else:
-                #     print('**'*99)
-                #     print('登陆失败！')
-                #     return redirect(url_for('auth.login'))
+            ## 就是邮箱存在，这时候我们得进行密码验证，又因为我们对密码进行了加密，所以得进行一系列的操作才行
+            # if check_password_hash(user.user_password,password):
+            #     # cooike 不适合存储太多数据，只适合存储少量数据  饼干碎屑 一般用于用户授权信息
+            #     # flask的session是经过加密后存储在cookie中的
+            #     session['user_id'] = user.id
+            #     return redirect('/')  # 找到根目录 就可以完成
+            # else:
+            #     print('**'*99)
+            #     print('登陆失败！')
+            #     return redirect(url_for('auth.login'))
         else:
             return f'{form.errors}'
 

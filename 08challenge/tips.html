@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答题说明</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .instructions {
+            background-color: #f7f7f7;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        .instructions h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .instructions p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .dont-show-again {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            color: #999;
+            cursor: pointer;
+        }
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #999;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .checked {
+            background-color: #007bff;
+        }
+        .checked::before {
+            content: '\2713';
+            color: #fff;
+            font-size: 16px;
+        }
+        .start-button {
+          margin: 0 auto; /* 水平居中 */
+          margin-top: 30px;
+            display: block;
+            width: 120px;
+            padding: 15px 0;
+            background-color: #0056b3;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 22px;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        .start-button:hover {
+            background-color: #007bff;
+        }
+        .start-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>答题须知</h1>
+        <p>尊敬的用户：</p>
+        <p>欢迎来到我们的答题界面。在这里，您将面临一系列精心设计的问题，答题开始即计时开始。</p>
+        <div class="instructions">
+            <h2>注意事项：</h2>
+            <p>1. 本次答题有多道题目，左侧为答题区，右侧为作答详情。</p>
+            <p>2. 请对每道题目合理分配作答时间。</p>
+            <p>3. 点击开始答题按钮后，计时将自动开始。</p>
+            <p>4. 点击提交按钮后，计时将自动结束。</p>
+            <p>5. 如需暂停答题，可以点击右侧作答详情的暂停键。</p>
+            <p>祝您答题顺利！</p>
+        </div>
+        <a href="challenge.html" class="start-button">开始答题</a>
+    </div>
+
+    <script>
+        document.getElementById('checkbox').addEventListener('click', function() {
+            this.classList.toggle('checked');
+        });
+    </script>
+</body>
+</html>
