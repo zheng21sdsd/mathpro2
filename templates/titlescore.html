@@ -57,15 +57,19 @@
         </a>
     </div>
     <div class="back-button" onclick="goBack()"></div>
-    
+    <button class="right-aligned">加入错题本</button>
+{#        隐藏id#}
+    <input type="hidden" id="question_answer_id" value="{{ question_answer_id }}" style="display: none;">
     <div class="titleview">
         <h1>题目答案</h1>
+{#        <img src="{{ question_path }}" alt="Question-Picture">#}
+        <img src="{{ answer_path }}" alt="Answer-Picture">
     </div>
 
     <div class="subit-score">
         <h2>得分</h2>
         <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入得分"></textarea>
-        <button class="submit-button" id="submit-button">提交</button>
+        <button class="subxmit-button" id="submit-button">提交</button>
     </div>
 
     </div>
@@ -84,8 +88,46 @@
             <button onclick="closeModal('avatar-modal')">Close</button>
         </div>
     </div>
-    
 
+    <script>
+        // 增加监听事件
+        document.getElementById('submit-button').addEventListener('click', function() {
+        var score = document.getElementById('text-answer').value.trim(); // 获取得分
+        console.log('得分')
+        console.log(score)
+        var questionId = document.getElementById('question_answer_id').value; // 获取问题ID==question_answer_id
+
+        if (!score) {
+            alert('请输入得分');
+            return;
+        }
+
+        // 创建FormData对象并附加数据
+        var formData = new FormData();
+        formData.append('score', score);
+        formData.append('questionId', questionId);
+
+        // 发送AJAX请求
+        fetch('/titlescore', { // 修改为你的后端接口地址
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.code === 200) {
+                alert('提交成功');
+                // 可选：提交成功后的操作，比如页面跳转
+                // window.location.href = '...';
+            } else {
+                alert('提交失败: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('提交失败:', error);
+            alert('提交失败，请重试。');
+        });
+    });
+    </script>
     
     <script>
         // 显示模态框

@@ -150,6 +150,38 @@ def titleview():
     #
     # return render_template('titleview.html')
 
+
+
+### titlescores页面显示
+@bp.route('/titlescore',methods = ['GET','POST'])
+# 每次一个函数都得进行g.user判断  所有我们可以用一个装饰器  来解决这个问题
+@login_required
+def titlescore():
+    if request.method == 'GET':
+        print('-----------------------GET进来了-----------------------')
+        question_answer_id = request.args.get('question_id')
+        print(f'-----------------------question_answer_id为{question_answer_id}-----------------------')
+        # user_answer_content = db.session.query(Records.user_answer_content).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).all()[0][0]
+        # user_answer_path = db.session.query(Records.user_answer_path).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).all()[0][0]
+        # print('user_answer_content',user_answer_content)#user_answer_content [('跳转',)]
+        # print('user_answer_path',user_answer_path)#user_answer_path [('uploads\\Snipaste_2024-03-09_17-58-37.png',)]
+        questions_infos = db.session.query(QuestionAnswerModel).filter(QuestionAnswerModel.id == question_answer_id).all()
+        # print('questions_infos[0]',questions_infos[0])
+        question_path = questions_infos[0].question_path
+        answer_path = questions_infos[0].answer_path
+        # model为类字典对象
+        print('question_path',question_path)
+        print('answer_path',answer_path)
+        return render_template('titlescore.html',question_path = question_path,answer_path = answer_path,question_answer_id = question_answer_id)
+    else:
+        print('-----------------------修改分数-----------------------')
+        data = request.form
+        scores = data.get('score')
+        questionId = data.get('questionId')
+        db.session.query(Records).filter(Records.question_answer_id == questionId,Records.user_id == g.user.id).update(scores = scores)
+        db.session.commit()
+        return render_template('titlescore.html')
+
 @bp.route('/add_to_favorites',methods = ['GET','POST'])
 # 每次一个函数都得进行g.user判断  所有我们可以用一个装饰器  来解决这个问题
 @login_required

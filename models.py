@@ -88,9 +88,11 @@ class Records(db.Model):
     user_answer_path = db.Column(db.String(255), nullable=True)  # 用户自己的答案路径
     user_answer_content = db.Column(db.String(255), nullable=True)  # 如果是选择题直接填写内容，如果非选择题上传图片到user_answer_path字段
     record_time = db.Column(db.DateTime, default=datetime.now)  # 做题时间
+    scores = db.Column(db.Integer, default=-1)  # 做题分数
 
     question_answer = db.relationship('QuestionAnswerModel',backref = 'records')
     user = db.relationship('UserModel',backref = 'records')  ### 即使外键同时records也可以用user.records来访问
+
 
 #
 # #

@@ -61,10 +61,14 @@
     
     <div class="titleview">
             <h1>{{ question.content }}</h1>
+{#            隐藏 属性  id#}
+            <input type="hidden" id="question_id" value="{{ question.id }}">
             <img src="{{ question.question_path }}" alt="题目图片">
     </div>
 
     <div class="submission-form">
+{#   <form method="POST" action="/upload" enctype="multipart/form-data"  style="text-align: center;">#}
+
     <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
     <!-- 文件上传 -->
     <input type="file" class="file-input" id="file-upload" accept="image/*">
@@ -72,7 +76,7 @@
     <div class="image-preview" id="image-preview"></div>
     <!-- 提交按钮 -->
     <button class="submit-button" id="submit-button">提交</button>
-</div>
+    </div>
 
     
     </div>
@@ -81,12 +85,14 @@
         // 文件上传处理
         const fileUpload = document.getElementById('file-upload');
         const imagePreview = document.getElementById('image-preview');
+        // 存放图片数组
         let imageFiles = [];
     
         fileUpload.addEventListener('change', function() {
           const files = Array.from(this.files);
           files.forEach(file => {
             if (file.type.startsWith('image/')) {
+              //alert('image类型')
               const reader = new FileReader();
               reader.onload = function(e) {
                 const img = new Image();
@@ -108,9 +114,12 @@
                 imagePreview.appendChild(imgContainer);
     
                 // 添加到图片文件数组
+             ////   alert('file')
+               // alert(file)
                 imageFiles.push(file);
               };
               reader.readAsDataURL(file);
+              //alert(reader.readAsDataURL(file))
             }
           });
         });
@@ -119,14 +128,58 @@
         const submitButton = document.getElementById('submit-button');
         submitButton.addEventListener('click', function() {
           const textValue = document.getElementById('text-answer').value.trim();
+          const questionId = document.getElementById('question_id').value;
           if (textValue === '' && imageFiles.length === 0) {
             alert('请输入文字题答案或上传图片');
             return;
           }
-          
+          const formData = new FormData();
+          formData.append('questionId', questionId);
+          formData.append('textValue', textValue);
+          imageFiles.forEach((file, index) => {
+            formData.append('imageFiles[' + index + ']', file);
+          });
+
+
+          //alert(formData)
+          // textValue 就是用户输入的文字 imageFiles 就是用户上传的图片
           // 提交逻辑
           // 这里可以添加提交逻辑，比如通过 AJAX 将数据提交给服务器
+           // alert('imageFiles')
+           // alert(imageFiles.length)
+           // alert(imageFiles);
+           event.preventDefault();
+            $.ajax({
+                url: '/submit_answer', // 这里填写你的后端接口地址
+                type: 'POST',
+                data:formData,
+                //data: JSON.stringify({textValue: textValue,imageFiles: imageFiles}),
+                // contentType: 'application/json',
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    // 这里处理服务器返回的响应
+                    if (response.code == 200){
+                        // 收藏成功
+                        alert(response.message);
+                        //alert('提交成功！');
+                        // 进行跳转到其他页面
+                        window.location.href = '/titlescore?question_id='+questionId
+
+                    } else {
+                        alert(response.message);
+                    }
+
+                },
+                error: function(error) {
+                    // 这里处理请求失败的情况
+                    alert("请求失败！")
+                    console.error('Error:', error);
+                }
+            });
           alert('提交成功！');
+          // 进行跳转到其他页面
+
         });
     </script>
 
