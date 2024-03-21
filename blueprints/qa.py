@@ -169,18 +169,73 @@ def titlescore():
         # print('questions_infos[0]',questions_infos[0])
         question_path = questions_infos[0].question_path
         answer_path = questions_infos[0].answer_path
+        scores = db.session.query(Records.scores).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).all()[0][0]
+
         # model为类字典对象
         print('question_path',question_path)
         print('answer_path',answer_path)
-        return render_template('titlescore.html',question_path = question_path,answer_path = answer_path,question_answer_id = question_answer_id)
+        print('scores',scores)
+        return render_template('titlescore.html',question_path = question_path,answer_path = answer_path,question_answer_id = question_answer_id,scores = scores)
     else:
         print('-----------------------修改分数-----------------------')
         data = request.form
         scores = data.get('score')
         questionId = data.get('questionId')
-        db.session.query(Records).filter(Records.question_answer_id == questionId,Records.user_id == g.user.id).update(scores = scores)
+        print('scores',scores)
+        print('questionId',questionId)
+        db.session.query(Records).filter(Records.question_answer_id == questionId,Records.user_id == g.user.id).update({Records.scores:scores})
         db.session.commit()
-        return render_template('titlescore.html')
+        return jsonify({'code': 200, 'message': '打分成功！','questionId':questionId})
+
+# 添加错题
+@bp.route('/add_to_wrong_questions',methods = ['GET','POST'])
+@login_required
+def add_to_wrong_questions():
+    if request.method == 'POST':
+        data = request.form
+        question_answer_id = data.get('question_answer_id')
+        print('-----------------------question_answer_id-----------------------')
+        print(question_answer_id)
+        # Check if the question is already in wrong questions  0为未加入错题  1为加入错题
+        # db.session.query(Records).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).update({Records.wrong_question:1})
+        # 进行错题判断的更新
+        wrong_question = db.session.query(Records.wrong_question).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id)[0][0]
+        print('-----------------------wrong_question-----------------------')
+        print(wrong_question)
+        if wrong_question == 1:
+            return jsonify({'code': 200, 'message': '请勿重复添加错题！'})
+        else:
+            db.session.query(Records).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).update({Records.wrong_question:1})
+            db.session.commit()
+            return jsonify({'code': 200, 'message': '成功加入错题本！'})
+
+
+# 移除错题
+
+@bp.route('/remove_from_wrong_questions',methods = ['GET','POST'])
+@login_required
+def remove_from_wrong_questions():
+    if request.method == 'POST':
+        ### 获取json数据
+        data = request.json
+        # 从数据中获取question_answer_id
+        question_answer_id = data.get('id')
+
+        # 移除错题
+        db.session.query(Records).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).update({Records.wrong_question:0})
+        db.session.commit()
+        return jsonify({'code': 200, 'message': '成功移除错题！'})
+
+        # existing_record = Records.query.filter_by(user_id=g.user.id, question_answer_id=question_answer_id).first()
+        #
+        # if existing_record:
+        #     existing_record.favorite = 0
+        #     db.session.commit()
+        #     print(f'-----------------------题目{question_answer_id}取消收藏成功！-----------------------')
+        #     return jsonify({'code': 200, 'message': '取消收藏成功'})
+        # else:
+        #     print(f'-----------------------题目{question_answer_id}还未收藏！-----------------------')
+        #     return jsonify({'code': 400, 'message': '请您先收藏该题目！'})
 
 @bp.route('/add_to_favorites',methods = ['GET','POST'])
 # 每次一个函数都得进行g.user判断  所有我们可以用一个装饰器  来解决这个问题
@@ -522,7 +577,27 @@ def wrongtitlebook():
         print(f'-----------------------题目{question_answer_id}收藏成功-----------------------')
         return jsonify({'code': 200, 'message': '收藏成功'})
     else:
+        question_answer_id_tuple = db.session.query(Records.question_answer_id).filter(Records.wrong_question==1,Records.user_id == g.user.id).all()
+        question_answer_ids = [question_answer_id[0] for question_answer_id in question_answer_id_tuple]
+        print('question_answer_ids',question_answer_ids)
+        questions = db.session.query(QuestionAnswerModel).filter(QuestionAnswerModel.id.in_(question_answer_ids)).all()
+        print('-----------------------questions-----------------------')
+        print(type(questions))
+        print(questions)
+
+        return render_template('Wrongtitlebook.html',questions = questions)
+
+        ##  为了保持代码复用  不用这种方式
+        # pathsTocontents = {}
+        # for question_answer_id in question_answer_ids:
+        #     # print('question_answer_id',question_answer_id[0])
+        #     questions_infos = db.session.query(QuestionAnswerModel.question_path,QuestionAnswerModel.content).filter(QuestionAnswerModel.id == question_answer_id[0]).all()
+        #     # print('questions_infos',questions_infos)
+        #     pathsTocontents[questions_infos[0][0]] = questions_infos[0][1]
+        # print('pathsTocontents',pathsTocontents)
+        # return render_template('Wrongtitlebook.html',pathsTocontents = pathsTocontents)
         return jsonify({'code': 400, 'message': '请求方式错误'})
+
 
 
 

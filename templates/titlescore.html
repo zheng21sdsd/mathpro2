@@ -57,7 +57,7 @@
         </a>
     </div>
     <div class="back-button" onclick="goBack()"></div>
-    <button class="right-aligned">加入错题本</button>
+    <button class="right-aligned" id="submit-WrongQuestionbutton" >加入错题本</button>
 {#        隐藏id#}
     <input type="hidden" id="question_answer_id" value="{{ question_answer_id }}" style="display: none;">
     <div class="titleview">
@@ -67,8 +67,8 @@
     </div>
 
     <div class="subit-score">
-        <h2>得分</h2>
-        <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入得分"></textarea>
+        <h2 >得分</h2>
+        <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入得分" >{{ scores|default('', true) }}</textarea>
         <button class="subxmit-button" id="submit-button">提交</button>
     </div>
 
@@ -88,7 +88,33 @@
             <button onclick="closeModal('avatar-modal')">Close</button>
         </div>
     </div>
+    {#    添加错题#}
+    <script>
+        document.getElementById('submit-WrongQuestionbutton').addEventListener('click', function() {
+            const question_answer_id = document.getElementById('question_answer_id').value; // 假设问题ID从某处获取
+            const formData = new FormData();
+            formData.append('question_answer_id', question_answer_id);
 
+            fetch('/add_to_wrong_questions', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    alert(data.message);
+                } else {
+                    alert('添加失败');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('添加错题时发生错误。');
+            });
+        });
+    </script>
+
+    {#    //提交得分#}
     <script>
         // 增加监听事件
         document.getElementById('submit-button').addEventListener('click', function() {
@@ -115,9 +141,10 @@
         .then(response => response.json())
         .then(data => {
             if (data.code === 200) {
-                alert('提交成功');
+                alert(data.message);
+                //alert('提交成功');
                 // 可选：提交成功后的操作，比如页面跳转
-                // window.location.href = '...';
+                window.location.href = '/titlescore?question_id='+data.questionId;
             } else {
                 alert('提交失败: ' + data.message);
             }
