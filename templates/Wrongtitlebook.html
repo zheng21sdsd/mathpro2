@@ -70,7 +70,7 @@
             <div class="knowledge-button-container">
                 <button type="submit" class="knowledge-button" onclick="RemoveQuestion(event,{{ question.id }})">移除</button>
 {#                <button type="submit" class="knowledge-button" onclick="CancelToFavorites(event,{{ question.id }})">取消收藏</button>#}
-                <a href="{{ url_for('qa.titleview', id=question.id) }}"><button class="knowledge-button">查看</button></a>
+                <a href="{{ url_for('qa.wrongtitleview', id=question.id) }}"><button class="knowledge-button">查看</button></a>
             </div>
         </div>
         {% endfor %}

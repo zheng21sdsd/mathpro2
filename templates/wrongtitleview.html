@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathPro</title>
-    <link rel="stylesheet" href="wrongtitleview.css">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/wrongtitleview.css') }}">
     <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
 
     <style>
@@ -56,10 +56,21 @@
         </a>
     </div>
     <div class="back-button" onclick="goBack()"></div>
-    <div class="right-aligned">得分：XX</div>
+    <div class="right-aligned">得分：{{ scores }}</div>
     <div class="answers">
-        <div class="answer-box">题目答案</div>
-        <div class="answer-box">我的答案</div>
+        <div class="answer-box">
+            <img src="{{ questionsinfo }}" alt="题目图片">
+{#            <img scr="{{ questionsinfo }} ">#}
+        </div>
+        <div class="answer-box">
+            <span>{{ user_answer_content}}</span>
+            {{ user_answer_content }}
+            {{ user_answer_path }}
+            <img src="{{ '../'+user_answer_path }}" alt="答案图片">
+
+{#            <img scr="{{ user_answer_path }}" alt="题目图片">#}
+        </div>
+{#        <div class="answer-box">我的答案</div>#}
         <div class="knowledge-button-container">
             <button class="knowledge-button">移除错题本</button>
             <a href="../02Titleview/titleview.html"><button class="knowledge-button">重做</button></a>

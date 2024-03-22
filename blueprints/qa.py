@@ -598,6 +598,27 @@ def wrongtitlebook():
         # return render_template('Wrongtitlebook.html',pathsTocontents = pathsTocontents)
         return jsonify({'code': 400, 'message': '请求方式错误'})
 
+## 错题详情页面
+@bp.route('/wrongtitleview',methods = ['GET','POST'])
+@login_required
+def wrongtitleview():
+    questionId = request.args.get('id')
+    if request.method == 'GET':
+        print('-----------------------GET进来了-----------------------')
+        user_answer_infos = db.session.query(Records).filter(Records.question_answer_id == questionId,Records.user_id == g.user.id).all()
+
+        user_answer_path = user_answer_infos[0].user_answer_path
+        user_answer_content = user_answer_infos[0].user_answer_content
+        scores = user_answer_infos[0].scores
+        print('user_answer_path',user_answer_path)
+        # 获取题目content和题目img
+        questionsinfo = db.session.query(QuestionAnswerModel.answer_path).filter(QuestionAnswerModel.id == questionId).first()[0]
+
+        print(questionsinfo)
+        # model为类字典对象
+
+        # return render_template('wrongtitleview.html',question_path = question_path,answer_path = answer_path,questionId = questionId,scores = scores)
+        return render_template('wrongtitleview.html',questionsinfo = questionsinfo,user_answer_path = user_answer_path,user_answer_content = user_answer_content,scores = scores)
 
 
 
