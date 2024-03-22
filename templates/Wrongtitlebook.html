@@ -65,7 +65,9 @@
 {#             <a href="{{ url_for('qa.titleview') }}"><img id="{{ question.id }}" src="{{ question.question_path }}" alt="题目图片" onclick="sendImageInfo(this.id)"></a>#}
 {#            <a href="{{ url_for('qa.titleview')+'?'+{{question.id}} }}"><img src="{{ question.question_path }}" alt="题目图片"></a>#}
 {#            question.id == {{ question.id }}#}
-            <a href="{{ url_for('qa.titleview', id=question.id) }}"><h2 id="questionTitle">{{ question.content }}</h2><img src="{{ question.question_path }}" alt="题目图片"></a>
+{#            # 点击进入查看#}
+{#            <a href="{{ url_for('qa.titleview', id=question.id) }}"><h2 id="questionTitle">{{ question.content }}</h2><img src="{{ question.question_path }}" alt="题目图片"></a>#}
+            <a href="{{ url_for('qa.wrongtitleview', id=question.id) }}"><h2 id="questionTitle">{{ question.content }}</h2><img src="{{ question.question_path }}" alt="题目图片"></a>
 {#            <a href="titleview.html"><img src="{{ question.question_path }}" alt="题目图片"></a>#}
             <div class="knowledge-button-container">
                 <button type="submit" class="knowledge-button" onclick="RemoveQuestion(event,{{ question.id }})">移除</button>
@@ -114,7 +116,7 @@
           window.history.back(); // JavaScript方法返回上一页
         }
     </script>
-{#    移除收藏题目#}
+{#    移除错题题目#}
     <script>
             function RemoveQuestion(event, questionId) {
             // 阻止表单默认提交行为

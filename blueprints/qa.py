@@ -618,7 +618,7 @@ def wrongtitleview():
         # model为类字典对象
 
         # return render_template('wrongtitleview.html',question_path = question_path,answer_path = answer_path,questionId = questionId,scores = scores)
-        return render_template('wrongtitleview.html',questionsinfo = questionsinfo,user_answer_path = user_answer_path,user_answer_content = user_answer_content,scores = scores)
+        return render_template('wrongtitleview.html',questionsinfo = questionsinfo,user_answer_path = user_answer_path,user_answer_content = user_answer_content,scores = scores,questionId = questionId)
 
 
 

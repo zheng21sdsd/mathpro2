@@ -63,17 +63,17 @@
 {#            <img scr="{{ questionsinfo }} ">#}
         </div>
         <div class="answer-box">
-            <span>{{ user_answer_content}}</span>
-            {{ user_answer_content }}
-            {{ user_answer_path }}
-            <img src="{{ '../'+user_answer_path }}" alt="答案图片">
+{#            <span>{{ user_answer_content}}</span>#}
+{#            {{ user_answer_content }}#}
+{#            {{ user_answer_path }}#}
+            <img src="{{ user_answer_path }}" alt="答案图片">
 
 {#            <img scr="{{ user_answer_path }}" alt="题目图片">#}
         </div>
 {#        <div class="answer-box">我的答案</div>#}
         <div class="knowledge-button-container">
-            <button class="knowledge-button">移除错题本</button>
-            <a href="../02Titleview/titleview.html"><button class="knowledge-button">重做</button></a>
+            <button class="knowledge-button" onclick="RemoveQuestion(event,{{ questionId }})">移除错题本</button>
+            <a href="{{ url_for('qa.titleview', id=questionId) }}"><button class="knowledge-button">重做</button></a>
         </div>
     </div>
     
@@ -88,12 +88,41 @@
             <button onclick="closeModal('avatar-modal')">Close</button>
         </div>
     </div>
-    
+
+    {#    移除错题题目#}
     <script>
-        function addToFavorites() {
-            alert("已收藏！");
+            function RemoveQuestion(event, questionId) {
+            // 阻止表单默认提交行为
+            event.preventDefault();
+          // 添加到收藏夹的逻辑  用Jquery的&。ajax（）函数来发送一个POST请求
+           {#//var questionId="{{ questions.id }}"; // 这里填写你需要收藏的问题的ID#}
+            {#alert('进来了')#}
+
+            $.ajax({
+                url: '/remove_from_wrong_questions', // 这里填写你的后端接口地址
+                type: 'POST',
+                data: JSON.stringify({id: questionId}),
+                contentType: 'application/json',
+                success: function(response) {
+                    // 这里处理服务器返回的响应
+                    if (response.code == 200){
+                        // 收藏成功
+                        alert(response.message);
+
+                    } else {
+                        alert(response.message);
+                    }
+
+                },
+                error: function(error) {
+                    // 这里处理请求失败的情况
+                    alert("请求失败！")
+                    console.error('Error:', error);
+                }
+            });
         }
-    </script>
+        </script>
+
     <script>
         function goBack() {
           window.history.back(); // JavaScript方法返回上一页
