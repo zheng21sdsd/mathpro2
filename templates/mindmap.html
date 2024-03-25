@@ -62,40 +62,93 @@
 
     <div class="map-container">
         <div class="map-half">
-            <select class="map-box" id="map1">
-                <option value="mind1">数学一</option>
-                <option value="mind2">数学二</option>
-                <option value="mind3">数学三</option>
+            <select class="map-box" id="map1" onchange="updateMap2Options()">
+                <option value="数一">数学一</option>
+                <option value="数二">数学二</option>
+                <option value="数三">数学三</option>
             </select>
         </div>
         <div class="map-half">
             <select class="map-box" id="map2">
-                <option value="map1">高数</option>
-                <option value="map2">线代</option>
-                <option value="map3">概率</option>
+                <option value="高数">高数</option>
+                <option value="线代">线代</option>
+                <option value="概率">概率</option>
             </select>
         </div>
     </div>
-    <div class="mindmap"><h1>思维导图</h1></div>
+{#    <div class="mindmap"><h1>思维导图</h1> <img src="..\\static\\mindmap\\数一概率论.png" alt="mind-map"></div>#}
+    <div class="mindmap">
+        <h1>思维导图</h1>
+    {#    {{ mindmap_infos.mindmap_path }}#}
+    {#    scores|default('', true) }}#}
 
+        <img src="..\\static\\mindmap\\数一概率论.png" alt="mind-map" style="max-width: 100%; height: auto;">
+    {#    <img src="|{{ mindmap_infos[0].mindmap_path }}" alt="mind-map" style="max-width: 100%; height: auto;">#}
     </div>
-
-
+    </div>
+{#    数二没有概率论选项#}
     <script>
-        var map1Select = document.getElementById("map1");
-        var map2Select = document.getElementById("map2");
-        map1Select.addEventListener("change", function() {
-            var selectedValue = this.value;
-            if (selectedValue === "mind2") {
-                var optionToHide = map2Select.querySelector("option[value='map3']");
-                optionToHide.style.display = "none";
+        function updateMap2Options() {
+            var map1 = document.getElementById('map1');
+            var map2 = document.getElementById('map2');
+
+            // 移除map2中所有选项
+            while (map2.options.length > 0) {
+                map2.remove(0);
+            }
+
+            // 根据map1的选择添加选项
+            if (map1.value === "数二") {
+                var options = [{'text': '高数', 'value': '高数'}, {'text': '概率', 'value': '概率'}];
             } else {
-                var optionsToShow = map2Select.querySelectorAll("option");
-                optionsToShow.forEach(function(option) {
-                    option.style.display = "block";
-                });
+                var options = [{'text': '高数', 'value': '高数'}, {'text': '线代', 'value': '线代'}, {
+                    'text': '概率',
+                    'value': '概率'
+                }];
+            }
+
+            // 为map2添加选项
+            for (var i = 0; i < options.length; i++) {
+            var  option = new Option(options[i].text, options[i].value);
+                map2.options.add(option);
+            }
+        }
+
+    </script>
+    <script>
+         var map1Select = $("#map1");
+        var map2Select = $("#map2");
+        function fetchImage() {
+            var map1Value = map1Select.val();
+            var map2Value = map2Select.val();
+           {#// fomData1 = new FormData();#}
+           {# //fomData1.append('map1Value', map1Value);#}
+           {# //fomData1.append('map2Value', map2Value);#}
+
+            // 使用AJAX向后端发送请求
+            $.ajax({
+                url: '/mindmap_image', // 后端接口URL
+                type: 'GET', // 请求类型
+                data: {
+                    map1Value: map1Value,
+                    map2Value: map2Value
+                }, // 将选择的value作为参数发送
+                success: function(response) {
+                    // 假设响应是图片的URL
+
+                    $('.mindmap img').attr('src', response.imageUrl); // 更新图片的src
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                    // 错误处理
             }
         });
+    }
+
+    // 当任一下拉框的选项改变时，获取图片
+    map1Select.change(fetchImage);
+    map2Select.change(fetchImage);
     </script>
 
     <script>
@@ -146,6 +199,7 @@
             alert('信息已更新！');
         });
     </script>
+
 </body>
 </html>
 

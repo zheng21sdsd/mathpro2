@@ -93,6 +93,12 @@ class Records(db.Model):
     question_answer = db.relationship('QuestionAnswerModel',backref = 'records')
     user = db.relationship('UserModel',backref = 'records')  ### 即使外键同时records也可以用user.records来访问
 
+class Mindmap(db.Model):
+    __tablename__ = 'mindmap'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    subject_type = db.Column(db.String(255), nullable=True)# 数一 2 3
+    subject_name = db.Column(db.String(255), nullable=True)# 高数 线代
+    mindmap_path = db.Column(db.String(255), nullable=True)# 路径# 存放在mindmap文件夹下
 
 #
 # #

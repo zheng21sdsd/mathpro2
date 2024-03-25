@@ -8,7 +8,7 @@ from flask import g
 from decorators import login_required
 from werkzeug.security import generate_password_hash,check_password_hash
 from exts import db
-from models import UserModel,QuestionAnswerModel,Records
+from models import UserModel,QuestionAnswerModel,Records,Mindmap
 import pymysql
 # from decorators import login_required
 # from models import UserModel,Image
@@ -675,4 +675,22 @@ def wrongtitleview():
         return render_template('wrongtitleview.html',questionsinfo = questionsinfo,user_answer_path = user_answer_path,user_answer_content = user_answer_content,scores = scores,questionId = questionId)
 
 
+@bp.route('/mindmap_image',methods = ['GET','POST'])
+@login_required
+def mindmap_image():
+    # if request.method == 'GET':
+    print('-----------------------GET进来了-----------------------')
+    subject_type = request.args.get('map1Value')
+    subject_name = request.args.get('map2Value')
 
+    mindmap_info = db.session.query(Mindmap).filter(
+        Mindmap.subject_type == subject_type,
+        Mindmap.subject_name == subject_name
+    ).first()
+    if mindmap_info:
+        image_url = mindmap_info.mindmap_path  # 假设是图片URL的字段
+    else:
+        # 如果没有找到对应的Mindmap，使用默认图片
+        image_url = '../static/mindmap/数一概率论.png'
+    # mindmap_infos = db.session.query(Mindmap).filter(Mindmap.subject_type == subject_type,Mindmap.subject_name == subject_name).all()
+    return jsonify({'imageUrl': image_url})
