@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathPro</title>
-    <link rel="stylesheet" href="challenge.css">
+    <link rel="stylesheet" href="{{url_for('static',filename = 'css/challenge.css')}}">
     <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
-
-    <style>
-    </style>
 </head>
 <body>
     <div class="header">
@@ -57,6 +54,7 @@
             }
         }
     </script>
+
     <div class="back-button" onclick="goBack()"></div>
     <script>
         function goBack() {
@@ -65,77 +63,25 @@
     </script>
     <div class="content">
         <div class="question-area" id="questionArea">
-            <div class="question" id="question1">
-                <h3>题目1</h3>
-                <div class="titleview">
-                    <h1>题目详情</h1>
+            {% for question in test_questions %}
+                {{ question.id }}
+                <div class="knowledge-card">
+                    <img src="{{ question.question_path }}" alt="题目图片">
+                     <div class="question" id="question1">
+                        <h3>题目{{ loop.index }}</h3>
+                        <div class="titleview">
+                            <input type="text" hidden="hidden" value = "{{ question.id }}">
+                            <img src="{{ question.question_path }}" alt="题目图片">
+                        </div>
+                        <div class="submission-form">
+                            <textarea class="text-input" id="text-answer-{{ question.id }}" placeholder="请输入选择题答案"></textarea>
+                            <input type="file" class="file-input" id="file-upload-{{ question.id }}" accept="image/*">
+                            <div class="image-preview" id="image-preview-{{ question.id }}"></div>
+                        </div>
+
+                    </div>
                 </div>
-                <div class="submission-form">
-                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
-                <input type="file" class="file-input" id="file-upload" accept="image/*">
-                <div class="image-preview" id="image-preview"></div>
-            </div>
-            <div class="question" id="question2">
-                <h3>题目2</h3>
-                <div class="titleview">
-                    <h1>题目详情</h1>
-                </div>
-                <div class="submission-form">
-                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
-                <input type="file" class="file-input" id="file-upload" accept="image/*">
-                <div class="image-preview" id="image-preview"></div>
-            </div>
-            <div class="question" id="question3">
-                <h3>题目3</h3>
-                <div class="titleview">
-                    <h1>题目详情</h1>
-                </div>
-                <div class="submission-form">
-                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
-                <input type="file" class="file-input" id="file-upload" accept="image/*">
-                <div class="image-preview" id="image-preview"></div>
-            </div>
-            <div class="question" id="question4">
-                <h3>题目4</h3>
-                <div class="titleview">
-                    <h1>题目详情</h1>
-                </div>
-                <div class="submission-form">
-                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
-                <input type="file" class="file-input" id="file-upload" accept="image/*">
-                <div class="image-preview" id="image-preview"></div>>
-            </div>
-            <div class="question" id="question5">
-                <h3>题目5</h3>
-                <div class="titleview">
-                    <h1>题目详情</h1>
-                </div>
-                <div class="submission-form">
-                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
-                <input type="file" class="file-input" id="file-upload" accept="image/*">
-                <div class="image-preview" id="image-preview"></div>
-            </div>
-            <div class="question" id="question6">
-                <h3>题目6</h3>
-                <div class="titleview">
-                    <h1>题目详情</h1>
-                </div>
-                <div class="submission-form">
-                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
-                <input type="file" class="file-input" id="file-upload" accept="image/*">
-                <div class="image-preview" id="image-preview"></div>
-            </div>
-            <div class="question" id="question7">
-                <h3>题目7</h3>
-                <div class="titleview">
-                    <h1>题目详情</h1>
-                </div>
-                <div class="submission-form">
-                <textarea class="text-input" id="text-answer" contenteditable="true" placeholder="请输入选择题答案"></textarea>
-                <input type="file" class="file-input" id="file-upload" accept="image/*">
-                <div class="image-preview" id="image-preview"></div>
-            </div>
-            <!-- 添加更多题目 -->
+            {% endfor %}
         </div>
     </div>
     <div class="question-number">
@@ -150,63 +96,89 @@
             <li class="selected" onclick="scrollToQuestion(5)">5</li>
             <li class="selected" onclick="scrollToQuestion(6)">6</li>
             <li class="selected" onclick="scrollToQuestion(7)">7</li>
+            <li class="selected" onclick="scrollToQuestion(8)">8</li>
+            <li class="selected" onclick="scrollToQuestion(9)">9</li>
+            <li class="selected" onclick="scrollToQuestion(10)">10</li>
             <!-- 其他题目 -->
         </ul>
-        
+
         <div class="action-buttons">
             <button onclick="saveAnswers()">保存</button>
             <button onclick="submitAnswers()">提交</button>
         </div>
     </div>
+    </div>
 
-  
-    <script>
-        // 文件上传处理
-        const fileUpload = document.getElementById('file-upload');
-        const imagePreview = document.getElementById('image-preview');
-        let imageFiles = [];
-        fileUpload.addEventListener('change', function() {
-          const files = Array.from(this.files);
-          files.forEach(file => {
-            if (file.type.startsWith('image/')) {
-              const reader = new FileReader();
-              reader.onload = function(e) {
-                const img = new Image();
-                img.src = e.target.result;
-                // 创建删除按钮
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = '删除';
-                deleteButton.className = 'delete-button';
-                deleteButton.onclick = function() {
-                  imageFiles = imageFiles.filter(image => image.name !== file.name);
-                  imagePreview.removeChild(imgContainer);
-                };
-                const imgContainer = document.createElement('div');
-                imgContainer.appendChild(img);
-                imgContainer.appendChild(deleteButton);
-                imagePreview.appendChild(imgContainer);
-                imageFiles.push(file);
-              };
-              reader.readAsDataURL(file);
+<script>
+        function submitAnswers(){
+            alert('提交答案')
+            var formData = new FormData();
+            {%  for question in test_questions %}
+            var textAnswer  = document.getElementById('text-answer-{{ question.id }}').value;
+            var fileInput   = document.getElementById('file-upload-{{ question.id }}');
+            if (fileInput.files.length>0){
+                let file = fileInput.files[0];
+                formData.append('file-{{ question.id }}', file);
             }
-          });
+            formData.append('text-{{ question.id }}', textAnswer);
+            {% endfor %}
+        $.ajax({
+            url: '/submit_answers_test',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                console.log('Success:', response);
+                alert('答案提交成功');
+
+                {#//window.location.href = '/titlescore?question_ids='+response.question_ids#}
+                window.location.href = '/';
+
+                },
+            error: function(error) {
+                    console.error('Error:', error);
+                    alert('保存失败，请重试');
+                }
         });
-        const submitButton = document.getElementById('submit-button');
-        submitButton.addEventListener('click', function() {
-          const textValue = document.getElementById('text-answer').value.trim();
-          if (textValue === '' && imageFiles.length === 0) {
-            alert('请输入文字题答案或上传图片');
-            return;
-          }
-          alert('提交成功！');
-        });
-        function scrollToQuestion(questionNumber) {
-            var question = document.getElementById('question' + questionNumber);
-            question.scrollIntoView({ behavior: 'smooth' });
+
         }
-        
+</script>
+
+<script>
+        function saveAnswers(){
+            alert('保存答案')
+            var formData = new FormData();
+            {%  for question in test_questions %}
+            var textAnswer  = document.getElementById('text-answer-{{ question.id }}').value;
+            var fileInput   = document.getElementById('file-upload-{{ question.id }}');
+            if (fileInput.files.length>0){
+                let file = fileInput.files[0];
+                formData.append('file-{{ question.id }}', file);
+            }
+            formData.append('text-{{ question.id }}', textAnswer);
+            {% endfor %}
+        $.ajax({
+            url: '/save_answers',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                console.log('Success:', response);
+                alert('答案保存成功');
+                },
+            error: function(error) {
+                    console.error('Error:', error);
+                    alert('保存失败，请重试');
+                }
+        });
+
+        }
     </script>
-    
 </body>
 </html>
+
+
+
 

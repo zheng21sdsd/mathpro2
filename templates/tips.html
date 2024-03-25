@@ -115,7 +115,8 @@
             <p>5. 如需暂停答题，可以点击右侧作答详情的暂停键。</p>
             <p>祝您答题顺利！</p>
         </div>
-        <a href="challenge.html" class="start-button">开始答题</a>
+{#        diffculty:{{ diffculty }}#}
+        <a href="{{ url_for('qa.challenge',diffculty=diffculty) }}" class="start-button">开始答题</a>
     </div>
 
     <script>

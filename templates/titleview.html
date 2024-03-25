@@ -150,7 +150,7 @@
            // alert(imageFiles);
            event.preventDefault();
             $.ajax({
-                url: '/submit_answer', // 这里填写你的后端接口地址
+                url: '/submit_answer?questionId=questionId', // 这里填写你的后端接口地址
                 type: 'POST',
                 data:formData,
                 //data: JSON.stringify({textValue: textValue,imageFiles: imageFiles}),
@@ -165,7 +165,6 @@
                         //alert('提交成功！');
                         // 进行跳转到其他页面
                         window.location.href = '/titlescore?question_id='+questionId
-
                     } else {
                         alert(response.message);
                     }

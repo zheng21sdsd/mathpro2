@@ -6,6 +6,7 @@ import config
 from blueprints.qa import bp as qa_bp
 from blueprints.auth import bp as auth_bp
 from exts import db,mail
+import os
 from flask import render_template
 app = Flask(__name__)
 app.config.from_object('config')
@@ -84,13 +85,14 @@ def allowed_file(filename):
 #             return jsonify({'error': 'File type not allowed'})
 @app.route('/submit_answer',methods = ['GET','POST'])
 def submit_answer():
-    import os
+
     # 确保上传文件夹存在
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
+    questionId = request.args.get('id')
+    print('questionId',questionId)
     # 获取文本字段
     text_value = request.form.get('textValue')
-    questionId = request.form.get('questionId')
+    # questionId = request.form.get('questionId')
 
     # 处理上传的图片文件
     files = request.files
@@ -124,6 +126,147 @@ def submit_answer():
     # return render_template('titlescore.html',questionId=questionId,sendmess=sendmess)
     return jsonify(code=200, message="提交成功！")
 
+
+@app.route('/save_answers',methods = ['GET','POST'])
+
+def save_answers():
+
+    print('-----------------------save_answers-----------------------')
+    if request.method == 'POST':
+        # 处理表单文本数据
+        text_data = request.form.to_dict()  # 包含了问题ID和相应的文本答案
+
+        # 处理文件上传
+        files = request.files.to_dict()  # 包含了问题ID和相应的文件对象
+
+        for question_id_text, text_value in text_data.items():
+            print(f'问题ID：{question_id_text}，文本答案：{text_value}')
+            question_id = question_id_text.split('-')[-1]
+            # input('-----------------------input-----------------------' )
+            # 对应问题的文件对象
+            file = files.get(f'file-{question_id}')  # 假设前端字段名为'file-问题ID'
+
+            filepath = None
+            if file and file.filename:
+                # 保存文件到服务器的上传文件夹
+                filename = file.filename
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(filepath)
+                print(f'文件已保存到：{filepath}')
+
+            # 在这里进行数据库更新操作
+            # 假设 g.user.id 包含了当前用户的ID，确保你的应用有途径获取当前用户ID
+            user_id = g.user.id  # 示例用户ID，根据实际情况获取
+
+            # 查找或创建数据库记录
+            record = db.session.query(Records).filter(
+                Records.user_id == user_id,
+                Records.question_answer_id == question_id
+            ).first()
+
+            if not record:
+                # 如果没有找到记录，则创建新记录
+                record = Records(
+                    user_id=user_id,
+                    question_answer_id=question_id,
+                    user_answer_content=text_value,
+                    user_answer_path=filepath
+                )
+                db.session.add(record)
+            else:
+                # 如果找到了记录，则更新记录
+                record.user_answer_content = text_value
+                record.user_answer_path = filepath
+
+            # 提交更改到数据库
+            db.session.commit()
+
+        # 返回一个成功的响应
+        return jsonify(code=200, message='保存成功！')
+
+    # if request.method=='POST':
+    #     text_data = request.form.to_dict()
+    #     print("接收到的文本数据:", text_data)
+    #     # 处理文件上传
+    #     files = request.files.to_dict()
+    #     for key,file in files.items():
+    #         if file and file.filename:
+    #             # 保存文件到服务器的上传文件夹
+    #             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    #             print('-----------------------保存图片路径-----------------------')
+    #             print(filepath)
+    #             file.save(filepath)
+    #             # flask 联合表查询
+    #             # db.session.query(Records).filter(Records.user_id == g.user.id,Records.question_answer_id == questionId).update({Records.user_answer_content: text_value, Records.user_answer_filepath: filepath})
+    #             # 更新记录
+    #             db.session.query(Records).filter(
+    #                 Records.user_id == g.user.id,
+    #                 Records.question_answer_id == questionId
+    #             ).update({
+    #                 Records.user_answer_content: text_value,
+    #                 Records.user_answer_path: filepath
+    #             })
+    #
+    #             # 提交更改到数据库
+    #             db.session.commit()
+
+
+@app.route('/submit_answers_test',methods = ['GET','POST'])
+def submit_answers_test():
+    print('-----------------------save_answers-----------------------')
+    if request.method == 'POST':
+        # 处理表单文本数据
+        text_data = request.form.to_dict()  # 包含了问题ID和相应的文本答案
+
+        # 处理文件上传
+        files = request.files.to_dict()  # 包含了问题ID和相应的文件对象
+        questionIDs = []
+        for question_id_text, text_value in text_data.items():
+            print(f'问题ID：{question_id_text}，文本答案：{text_value}')
+            question_id = question_id_text.split('-')[-1]
+            questionIDs.append(question_id)
+
+            # input('-----------------------input-----------------------' )
+            # 对应问题的文件对象
+            file = files.get(f'file-{question_id}')  # 假设前端字段名为'file-问题ID'
+
+            filepath = None
+            if file and file.filename:
+                # 保存文件到服务器的上传文件夹
+                filename = file.filename
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(filepath)
+                print(f'文件已保存到：{filepath}')
+
+            # 在这里进行数据库更新操作
+            # 假设 g.user.id 包含了当前用户的ID，确保你的应用有途径获取当前用户ID
+            user_id = g.user.id  # 示例用户ID，根据实际情况获取
+
+            # 查找或创建数据库记录
+            record = db.session.query(Records).filter(
+                Records.user_id == user_id,
+                Records.question_answer_id == question_id
+            ).first()
+
+            if not record:
+                # 如果没有找到记录，则创建新记录
+                record = Records(
+                    user_id=user_id,
+                    question_answer_id=question_id,
+                    user_answer_content=text_value,
+                    user_answer_path=filepath
+                )
+                db.session.add(record)
+            else:
+                # 如果找到了记录，则更新记录
+                record.user_answer_content = text_value
+                record.user_answer_path = filepath
+
+            # 提交更改到数据库
+            db.session.commit()
+
+        # 返回一个成功的响应
+        return jsonify(code=200, message='保存成功！',question_ids=questionIDs)
 
 
 # def submit_answer():

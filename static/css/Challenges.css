@@ -166,24 +166,7 @@ body {
 .account-form button:hover {
     background-color: #005f79;
 }
-/*账号管理*/
-.account-form ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 30px;
-}
-.account-form li {
-    padding: 15px 20px;
-    border-bottom: 1px solid #9ee0ed; /* 分隔线 */
-    cursor: pointer;
-    box-shadow: 0 0 20px rgba(180, 244, 102, 0.5); /* 阴影效果 */
-    transition: background-color 0.3s;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* 文字阴影 */
-}
 
-.account-form li:hover {
-    background-color: #20d0d9; /* 鼠标悬停时的背景色 */
-}
 
 .container {
     display: flex;
@@ -249,7 +232,7 @@ body {
     border: 1px solid #000;
     border-radius: 5px;
     overflow: hidden;
-    width: auto;
+    width: 600px;
 }
 
 .search-input {
@@ -340,4 +323,8 @@ body {
 .challenge:hover {
     border-color: cornflowerblue;
     background-color: #4e83d8f1;
+}
+a{
+    text-decoration: none !important;
+    color: #fff;
 }

@@ -14,7 +14,11 @@ import pymysql
 # from models import UserModel,Image
 # from models import Question,KnowledgePoint,get_search_results  ## 导入问题答案表  导入问题表  导入知识点表
 ##  连接数据库
-
+DIFFCULTY = {
+    '1':['难度1','难度2'],
+    '2':['难度3','难度4'],
+    '3':['难度5']
+}
 bp = Blueprint('qa',__name__,url_prefix='/')
 
 
@@ -118,10 +122,57 @@ def practicecheck():
 @login_required
 ### 写一个排行榜单页面的后端逻辑代码
 def challenges():
+    # diffculty = request.args.get('diffculty')
+    # print('----------diffculty----------')
+    # print(diffculty)
+    # if diffculty == 1:
+    #     diffculty = DIFFCULTY[str(diffculty)]
+    #     print(diffculty)
+
 
     return render_template('challenges.html')
+## Challenges
+@bp.route('/Challenges',methods = ['GET','POST'])
+# 每次一个函数都得进行g.user判断  所有我们可以用一个装饰器  来解决这个问题
+@login_required
+### 写一个排行榜单页面的后端逻辑代码
+def Challenges():
 
+    return render_template('Challenges.html')
+
+@bp.route('/tips',methods = ['GET','POST'])
+# 每次一个函数都得进行g.user判断  所有我们可以用一个装饰器  来解决这个问题
+@login_required
+### 写一个排行榜单页面的后端逻辑代码
+def tips():
+    diffculty = request.args.get('diffculty')
+    print('-----------------------diffculty-----------------------')
+    print(diffculty)
+
+
+    return render_template('tips.html',diffculty = diffculty)
+
+
+
+@bp.route('/challenge',methods = ['GET','POST'])
+# 每次一个函数都得进行g.user判断  所有我们可以用一个装饰器  来解决这个问题
+@login_required
+### 写一个排行榜单页面的后端逻辑代码
+def challenge():
+    diffculty = request.args.get('diffculty')
+    print('----------diffculty----------')
+    print(diffculty)
+    print(type(diffculty))
+    diffculties = DIFFCULTY[diffculty]
+    test_questions = db.session.query(QuestionAnswerModel).filter(QuestionAnswerModel.difficulty.in_(diffculties)).limit(10).all()
+    print('test_questions',test_questions)
+    for name in test_questions:
+        print(name)
+    print(diffculties)
+
+    return render_template('challenge.html',test_questions = test_questions,diffculty = diffculty)
 #########################titleview
+
 @bp.route('/titleview',methods = ['GET','POST'])
 # 每次一个函数都得进行g.user判断  所有我们可以用一个装饰器  来解决这个问题
 @login_required
@@ -318,6 +369,9 @@ def cancel_to_favorites():
         return jsonify({'code': 200, 'message': '收藏成功'})
     else:
         return jsonify({'code': 400, 'message': '请求方式错误'})
+
+
+# 保存答案
 
 # 个人信息视图及其函数
 @bp.route('/personalinformation',methods = ['GET','POST'])

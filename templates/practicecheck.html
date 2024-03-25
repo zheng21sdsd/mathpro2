@@ -1,13 +1,10 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathPro</title>
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/practicecheck.css')}}">
-    <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
-
-
+    <link rel="stylesheet" href="{{ url_for('static',filename = 'css/practicecheck.css') }}">
     <style>
     </style>
 </head>
@@ -18,18 +15,17 @@
             <div class="username">MathPro</div>
         </div>
         <ul>
-            <li data-content="这里是账号管理的内容">个人信息</li>
-            <li data-content="这里是收藏夹的内容">收藏夹</li>
-            <li data-content="这里是错题本的内容">错题本</li>
+            <a href="../09personalinformation/personalinformation.html"><li>个人信息</li></a>
+            <a href="../10collection/collection.html"><li>收藏夹</li></a>
+            <a href="../11Wrongtitlebook/Wrongtitlebook.html"><li>错题本</li></a>
         </ul>
         <button class="logout-btn">退出登录</button>
     </div>
 
     <div class="container">
     <div class="top-nav">
-        <a href="{{ url_for('qa.practicecheck') }}"><button class="button">训练场</button></a>
-        <a href="{{ url_for('qa.ranking') }}"><button class="button">排行榜</button></a>
-        <a href="{{ url_for('qa.mindmap') }}"><button class="button">思维导图</button></a>
+        <a href="../06practice/practicecheck.html"><button class="check-button">查漏补缺</button></a>
+        <a href="../06practice/Challenges.html"><button class="button">挑战模式</button></a>
         <a>
             <div class="search-container">
                 <input type="text" class="search-input" placeholder="请输入">
@@ -61,7 +57,7 @@
 
     <ul id="editable-list" class="ul-edit">
         <li>
-            <span class="knowledge" ondblclick="editItem(this)">知识点1</span>
+            <a href="knowledgeview.html" class="knowledge">知识点</a>
             <input type="text" class="edit-input" value="知识点1">
             <span>0/50</span>
             <button class="addrow" onclick="addRow(this)">添加行</button>
@@ -99,7 +95,7 @@
           var editableList = document.getElementById("editable-list");
           var newKnowledgeItem = document.createElement("li");
           newKnowledgeItem.className = "li-edit-knowledge";
-          newKnowledgeItem.innerHTML = '<span class="knowledge" ondblclick="editItem(this)">知识点</span> <input type="text" class="edit-input" value="知识点"> <span>0/50</span> <button class="addrow" onclick="addRow(this)">添加行</button> <button class="deletebutton" onclick="deleteItem(this)">删除</button>';
+          newKnowledgeItem.innerHTML = '<span class="knowledge">知识点</span> <input type="text" class="edit-input" value="知识点"> <span>0/50</span> <button class="addrow" onclick="addRow(this)">添加行</button> <button class="deletebutton" onclick="deleteItem(this)">删除</button>';
           editableList.appendChild(newKnowledgeItem);
         }
         function addRow(btn) {

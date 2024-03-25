@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathPro</title>
-{#    <link rel="stylesheet" href="../static/css/Challenges.css">#}
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/Challenges.css')}}">
-    <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
-
+    <link rel="stylesheet" href="{{ url_for('static',filename = 'css/Challenges.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename = 'css/Challenges.css') }}">
     <style>
     </style>
 </head>
@@ -18,9 +16,9 @@
             <div class="username">MathPro</div>
         </div>
         <ul>
-            <li data-content="这里是账号管理的内容">个人信息</li>
-            <li data-content="这里是收藏夹的内容">收藏夹</li>
-            <li data-content="这里是错题本的内容">错题本</li>
+            <a href="../09personalinformation/personalinformation.html"><li>个人信息</li></a>
+            <a href="../10collection/collection.html"><li>收藏夹</li></a>
+            <a href="../11Wrongtitlebook/Wrongtitlebook.html"><li>错题本</li></a>
         </ul>
 
         <button class="logout-btn">退出登录</button>
@@ -28,9 +26,10 @@
 
     <div class="container">
     <div class="top-nav">
-        <a href="{{ url_for('qa.practicecheck') }}"><button class="button">训练场</button></a>
-        <a href="{{ url_for('qa.ranking') }}"><button class="button">排行榜</button></a>
-        <a href="{{ url_for('qa.mindmap') }}"><button class="button">思维导图</button></a>
+{#        <a href="../06practice/practicecheck.html"><button class="button">查漏补缺</button></a>#}
+        <a href="{{ url_for('qa.practicecheck') }}"><button class="button">查漏补缺</button></a>
+        <a href="{{ url_for('qa.Challenges') }}"><button class="challenge-button">挑战模式</button></a>
+{#        <a href="../06practice/Challenges.html"><button class="challenge-button">挑战模式</button></a>#}
         <a>
             <div class="search-container">
                 <input type="text" class="search-input" placeholder="请输入">
@@ -60,9 +59,9 @@
     </div>
     <div class="back-button" onclick="goBack()"></div>
 
-    <a href="../08challenge/challenge.html" class="challenge">基础</a>
-    <a href="../08challenge/challenge.html" class="challenge">进阶</a>
-    <a href="../08challenge/challenge.html" class="challenge">高阶</a>
+    <a href="{{ url_for('qa.tips',diffculty = 1) }}" class="challenge">基础</a>
+    <a href="{{ url_for('qa.tips',diffculty = 2) }}" class="challenge">进阶</a>
+    <a href="{{ url_for('qa.tips',diffculty = 3) }}" class="challenge">高阶</a>
 
     <script>
         function goBack() {
