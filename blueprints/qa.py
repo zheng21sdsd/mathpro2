@@ -8,7 +8,7 @@ from flask import g
 from decorators import login_required
 from werkzeug.security import generate_password_hash,check_password_hash
 from exts import db
-from models import UserModel,QuestionAnswerModel,Records,Mindmap
+from models import UserModel,QuestionAnswerModel,Records,Mindmap,KnowledgePointModel
 import pymysql
 # from decorators import login_required
 # from models import UserModel,Image
@@ -694,3 +694,12 @@ def mindmap_image():
         image_url = '../static/mindmap/数一概率论.png'
     # mindmap_infos = db.session.query(Mindmap).filter(Mindmap.subject_type == subject_type,Mindmap.subject_name == subject_name).all()
     return jsonify({'imageUrl': image_url})
+@bp.route('/knowledgeview',methods = ['GET','POST'])
+@login_required
+def knowledgeview():
+    knowledge_point_name = request.args.get('knowledge_point')
+    print('knowledge_point_name',knowledge_point_name)
+
+    konwledge_infos = db.session.query(KnowledgePointModel).filter(KnowledgePointModel.knowledge_point_name == knowledge_point_name).all()
+    print('konwledge_infos',konwledge_infos)
+    return render_template('knowledgeview.html')

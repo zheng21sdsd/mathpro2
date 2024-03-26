@@ -40,6 +40,12 @@ class KnowledgePointModel(db.Model):
     knowledge_point_name = db.Column(db.String(255), nullable=True)
     # knowledge_point_name = db.Column(db.String(255), nullable=False)
     knowledge_parent_point = db.Column(db.Integer,default=-1)
+    # 1为属于  0为不属于
+    mathone = db.Column(db.Integer,default=0)
+    mathtwo = db.Column(db.Integer,default=0)
+    maththree = db.Column(db.Integer,default=0)
+    subject_type = db.Column(db.String(255), nullable=True)  # 高数 线代 概率论
+
 ### 题目的问题答案路径
 class QuestionAnswerModel(db.Model):
     '''  `question_answer_id` int NOT NULL AUTO_INCREMENT COMMENT '主键',

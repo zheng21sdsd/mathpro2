@@ -57,7 +57,8 @@
 
     <ul id="editable-list" class="ul-edit">
         <li>
-            <a href="knowledgeview.html" class="knowledge">知识点</a>
+{#            <a href="{{ url_for('qa.knowledgeview')}}" class="knowledge">知识点</a>#}
+            <a href="{{ url_for('qa.knowledgeview')}}" class="knowledge">知识点</a>>
             <input type="text" class="edit-input" value="知识点1">
             <span>0/50</span>
             <button class="addrow" onclick="addRow(this)">添加行</button>
@@ -85,12 +86,32 @@
             saveEdit(textSpan, input);
           });
         }
+        {#function saveEdit(textSpan, input) {#}
+        {##}
+        {#  var inputValue = input.value;#}
+        {#  textSpan.textContent = inputValue;#}
+        {#  textSpan.style.display = "inline";#}
+        {#  input.style.display = "none";#}
+
         function saveEdit(textSpan, input) {
-          var inputValue = input.value;
-          textSpan.textContent = inputValue;
-          textSpan.style.display = "inline";
-          input.style.display = "none";
+            var inputValue = input.value; // 用户输入的知识点名称
+            textSpan.textContent = inputValue; // 更新显示的文本
+            textSpan.style.display = "inline";
+            input.style.display = "none";
+
+            // 构建新的URL
+            var knowledgeURL = "/knowledgeview?knowledge_point=" + encodeURIComponent(inputValue);
+            alert(knowledgeURL); // 显示新的URL（仅用于调试
+
+            // 查找与当前编辑项关联的<a>标签，并更新其href属性
+            var link = textSpan.parentNode.querySelector("a.knowledge");
+            if (link) {
+                link.href = knowledgeURL; // 更新href属性
+                link.textContent = inputValue; // 如果需要，也更新链接文本
+            }
         }
+
+
         function addKnowledge() {
           var editableList = document.getElementById("editable-list");
           var newKnowledgeItem = document.createElement("li");
