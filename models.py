@@ -176,7 +176,7 @@ class user_knowledge_level(db.Model):
     __tablename__ = 'user_knowledge_level'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    knowledge_point_id = db.Column(db.Integer, nullable=True)
+    knowledge_point_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer,nullable=True)
     knowledge_point_name = db.Column(db.String(255), nullable=True)
     # knowledge_point_name = db.Column(db.String(255), nullable=False)

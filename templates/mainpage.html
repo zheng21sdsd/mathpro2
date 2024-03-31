@@ -238,7 +238,8 @@
 
                       // $('.knowledge-card').html(response);
                         //$('.Body').html(response);
-                         $('.knowledge-card').empty();
+                        alert(response.questions);
+                         //$('.knowledge-card').empty();
                         response.questions.forEach(function(question) {
                             // Create HTML for each question card
                             var html = `
