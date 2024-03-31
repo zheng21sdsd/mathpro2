@@ -74,42 +74,89 @@ def get_updated_questions():
     ### 根据 scores  konwledge_level type_level题型水平  来获取题目
 
     ##
-    #user_level
-    #user_knowledge_level = length(n) [50,50,50,50,......,50]      ( knowlege_num = n)
-    #user_type_level = length(3) [50,50,50]
-    
-#for all question in questions
-    #question_level = questionlevel*20
-    #question_knowledge = length(n) [1,0,0,0,......,0]      (knowledge_id = 1, knowlege_num = n)
-    #question_type = length(3) [1,0,0]      (type_id = 1, type_num = 3)
-#       
-    #level_dot = userlevel*questionlevel
-    #knowlege_dot = dot(user_knowledge_level, question_knowledge)
-    #type_dot = dot(user_type_level, question_type)
-    #dot_sum = level_dot + knowlege_dot + type_dot
+    # user_level
+    # user_knowledge_level = length(n) [50,50,50,50,......,50]      ( knowlege_num = n)
+    # user_type_level = length(3) [50,50,50]
+
+    # for all question in questions
+    # question_level = questionlevel*20
+    # question_knowledge = length(n) [1,0,0,0,......,0]      (knowledge_id = 1, knowlege_num = n)
+    # question_type = length(3) [1,0,0]      (type_id = 1, type_num = 3)
     #
-    #cos[] = dot_sum/(mod(level_dot)+mod(knowlege_dot)+mod(type_dot))
+    # level_dot = userlevel*questionlevel
+    # knowlege_dot = dot(user_knowledge_level, question_knowledge)
+    # type_dot = dot(user_type_level, question_type)
+    # dot_sum = level_dot + knowlege_dot + type_dot
     #
-    #for all question in questions
+    # cos[] = dot_sum/(mod(level_dot)+mod(knowlege_dot)+mod(type_dot))
+    #
+    # for all question in questions
     #   recommend the highest three cos[] question
     #
     #
     #
     #
-    questionss= db.session.query(QuestionAnswerModel).all()
-    
+    questionss = db.session.query(QuestionAnswerModel).all()
 
+    questionnum = len(questionss)
+    cosdict = {}
+    for question in questionss:
+        question_level = question.difficulty * 20
 
+        knowledgenum = db.session.query(KnowledgePointModel).count()
+        question_knowledge = np.zeros(knowledgenum)
+        question_knowledge[question.knowledge_point - 1] = 1
+
+        type_num = 3
+        question_type = np.zeros(type_num)
+        question_type[question.question_type] = 1
+        # =================================================
+        userlevel = db.session.query(UserModel).filter(UserModel.id == g.user.id).first().score
+        # 建一个向量knowlege_point_level，长度为知识点个数，每个知识点对应一个水平值
+        user_knowledge_level = np.zeros(knowledgenum)
+
+        temp = db.session.query(user_knowledge_level).filter(user_knowledge_level.user_id == g.user.id).all()
+        for tem in temp:
+            user_knowledge_level[tem.knowledge_point_id - 1] = tem.knowledge_point_level
+
+        user_type_level = np.zeros(type_num)
+        user_type_level[0] = db.session.query(UserModel).filter(UserModel.id == g.user.id).first().Multiple_choice_level
+        user_type_level[1] = db.session.query(UserModel).filter(UserModel.id == g.user.id).first().Fill_blanks_level
+        user_type_level[2] = db.session.query(UserModel).filter(UserModel.id == g.user.id).first().Short_answer_level
+
+        level_dot = userlevel * question_level
+        knowlege_dot = np.dot(user_knowledge_level, question_knowledge)
+        type_dot = np.dot(user_type_level, question_type)
+        dot_sum = level_dot + knowlege_dot + type_dot
+        user_mod_sum = np.sqrt(
+            level_dot ** 2 + np.dot(user_knowledge_level, user_knowledge_level) + np.dot(user_type_level,
+                                                                                         user_type_level))
+        question_mod_sum = np.sqrt(
+            question_level ** 2 + np.dot(question_knowledge, question_knowledge) + np.dot(question_type, question_type))
+
+        cos = dot_sum / (user_mod_sum * question_mod_sum)
+        cosdict[question.id] = cos
+        # 转成列表
+        cosList = list(cosdict.keys())[:3]
+        question_temp = []
+        for i in range(len(cosList)):
+            print('-----------------------cosList-----------------------')
+            print(cosList[i])
+
+            question_temp[i] = db.session.query(QuestionAnswerModel).filter(
+                QuestionAnswerModel.id == cosList[i]).first()
+
+        # user_type_level = [db.session.query(UserModel).filter(UserModel.id == g.user.id).all()[0].Multiple_choice_level,
 
     questions = []
-    for question in questionss:
+    for question in question_temp:
         question_dict = {
             'id': question.id,
             'content': question.content,
             'question_path': question.question_path,
             # 其他属性
         }
-    
+
         questions.append(question_dict)
 
     # 返回 JSON 格式的数据
@@ -228,8 +275,6 @@ def tips():
     diffculty = request.args.get('diffculty')
     print('-----------------------diffculty-----------------------')
     print(diffculty)
-
-
     return render_template('tips.html',diffculty = diffculty)
 
 
@@ -302,7 +347,6 @@ def titlescore():
         print('-----------------------GET进来了-----------------------')
         question_answer_id = request.args.get('question_id')
         print(f'-----------------------question_answer_id为{question_answer_id}-----------------------')
-
         questions_infos = db.session.query(QuestionAnswerModel).filter(QuestionAnswerModel.id == question_answer_id).all()
         # print('questions_infos[0]',questions_infos[0])
         question_path = questions_infos[0].question_path
@@ -311,9 +355,7 @@ def titlescore():
         print('answer_path', answer_path)
         scores = db.session.query(Records.scores).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).all()[0][0]
         # scores = db.session.query(Records.scores).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).all()[0][0]
-
         # model为类字典对象
-
         print('scores',scores)
         return render_template('titlescore.html',question_path = question_path,answer_path = answer_path,question_answer_id = question_answer_id,scores = scores)
     else:
@@ -323,8 +365,7 @@ def titlescore():
         questionId = data.get('questionId')
         print('scores',scores)
         print('questionId',questionId)
-
-            # 查看题目类型  并计算得分   查看知识点类型  并计算知识点得分 查看用户能力值  并计算用户得分
+         # 查看题目类型  并计算得分   查看知识点类型  并计算知识点得分 查看用户能力值  并计算用户得分
         questioninfo = db.session.query(QuestionAnswerModel).filter(QuestionAnswerModel.id == questionId).all()
         question_type = questioninfo[0].question_type
         knowledge_point = questioninfo[0].knowledge_point
@@ -335,8 +376,6 @@ def titlescore():
         knowledge_point_level = db.session.query(user_knowledge_level).filter(user_knowledge_level.user_id == g.user.id).all()
         print('userInfo',userInfo)
         print('knowledge_point_level',knowledge_point_level)
-
-
         userlevel = int(userInfo[0].score)
         if int(scores)<100:
             #对应题型水平↓
@@ -352,11 +391,10 @@ def titlescore():
                 pass
             knowlevel = []  ## 知识点level 更新容器
             #对应知识点水平减少
-            for  knowledge in knowledge_point_level:
+            for knowledge in knowledge_point_level:
                 if knowledge.knowledge_point_id == knowledge_point:
                     knowledge.knowlege_point_level =knowledge.knowledge_point_level-type_bias
                     knowlevel.append(knowledge.knowlege_point_level)
-
             #用户能力值↓
             #0-20分段特殊处理
             if userInfo[0].score <=20:
@@ -366,8 +404,6 @@ def titlescore():
                     userInfo[0].score = userInfo[0].score - 1
             else:#大于0分，按减分公式减少
                 userInfo[0].score = userInfo[0].score - (userlevel/(question_difficulty*20))
-
-
         elif int(scores) == 100:
             type_bias = 1
             #对应题型水平增加
@@ -502,8 +538,6 @@ def add_to_favorites():
         ### 存入records表
         db.session.add(record)
         db.session.commit()
-
-
         # # 从数据库中获取question_answer_object对象
         # question_answer_object = QuestionAnswerModel.query.get(question_answer_id)
         # 将题目加入到收藏夹
@@ -525,10 +559,8 @@ def cancel_to_favorites():
         data = request.json
         # 从数据中获取question_answer_id
         question_answer_id = data.get('id')
-
         # Check if the question is already in favorites
         existing_record = Records.query.filter_by(user_id=g.user.id, question_answer_id=question_answer_id).first()
-
         if existing_record:
             existing_record.favorite = 0
             db.session.commit()

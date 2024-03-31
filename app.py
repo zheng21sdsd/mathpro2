@@ -129,25 +129,23 @@ def submit_answer():
     return jsonify(code=200, message="提交成功！")
 
 
+
+
 @app.route('/save_answers',methods = ['GET','POST'])
 
 def save_answers():
-
     print('-----------------------save_answers-----------------------')
     if request.method == 'POST':
         # 处理表单文本数据
         text_data = request.form.to_dict()  # 包含了问题ID和相应的文本答案
-
         # 处理文件上传
         files = request.files.to_dict()  # 包含了问题ID和相应的文件对象
-
         for question_id_text, text_value in text_data.items():
             print(f'问题ID：{question_id_text}，文本答案：{text_value}')
             question_id = question_id_text.split('-')[-1]
             # input('-----------------------input-----------------------' )
             # 对应问题的文件对象
             file = files.get(f'file-{question_id}')  # 假设前端字段名为'file-问题ID'
-
             filepath = None
             if file and file.filename:
                 # 保存文件到服务器的上传文件夹
@@ -155,17 +153,15 @@ def save_answers():
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(filepath)
                 print(f'文件已保存到：{filepath}')
-
             # 在这里进行数据库更新操作
             # 假设 g.user.id 包含了当前用户的ID，确保你的应用有途径获取当前用户ID
             user_id = g.user.id  # 示例用户ID，根据实际情况获取
-
             # 查找或创建数据库记录
             record = db.session.query(Records).filter(
                 Records.user_id == user_id,
                 Records.question_answer_id == question_id
             ).first()
-
+            print('record',record)
             if not record:
                 # 如果没有找到记录，则创建新记录
                 record = Records(

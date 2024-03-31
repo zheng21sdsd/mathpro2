@@ -65,22 +65,23 @@
             <tr>
                 <th>名次</th>
                 <th>姓名</th>
-                <th>分数</th>
+{#                <th>分数</th>#}
                 <th>做题数</th>
             </tr>
             {% for user in user_rank %}
             <tr>
                 <td class="rank" name = "{{ loop.index }}">{{ loop.index }}</td>
                 <td name = '{{ user.name }}'>{{ user.name }}</td>
-                <td name = '{{ user.score }}'>{{ user.score }}</td>
-                <td name = '{{ user.score }}'>1</td>
+{#                <td name = '{{ user.score }}'>{{ user.score }}</td>#}
+                <td name = '{{ user.count }}'>{{ user.count }}</td>
             </tr>
             {% endfor %}
             <tr class="myrank">
                 <td>我的排名:{{ myrank.current_user_rank }}/{{ myrank.total_user }}</td>
                 <td name = '{{ user.name }}'>{{ user.name }}</td>
-                <td>{{ user.score }}</td>
-                <td>1</td>
+{#                <td>{{ user.score }}</td>#}
+{#                做题数量#}
+                <td>{{ user.count}}</td>
             </tr>         
 
         </table>
