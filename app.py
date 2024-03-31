@@ -9,7 +9,7 @@ from exts import db,mail
 import os
 from flask import render_template
 app = Flask(__name__)
-app.config.from_object('config')
+app.config.from_object(config)
 
 db.init_app(app)
 mail.init_app(app)
@@ -88,7 +88,7 @@ def submit_answer():
 
     # 确保上传文件夹存在
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    questionId = request.args.get('id')
+    questionId = request.args.get('questionId')
     print('questionId',questionId)
     # 获取文本字段
     text_value = request.form.get('textValue')
@@ -109,6 +109,9 @@ def submit_answer():
     # flask 联合表查询
     # db.session.query(Records).filter(Records.user_id == g.user.id,Records.question_answer_id == questionId).update({Records.user_answer_content: text_value, Records.user_answer_filepath: filepath})
     # 更新记录
+            print('-----------------------更新记录-----------------------')
+            print(text_value)
+            print('questionId',questionId)
             db.session.query(Records).filter(
                 Records.user_id == g.user.id,
                 Records.question_answer_id == questionId
@@ -119,7 +122,6 @@ def submit_answer():
 
             # 提交更改到数据库
             db.session.commit()
-
     # 返回一个成功的响应
     # 返回页面  并且带着这些数据
     sendmess = {'code': 200, 'message': '提交成功！'}

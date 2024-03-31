@@ -1,288 +1,269 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPro</title>
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/personalpage.css')}}">
-    <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
-    <style>
-    </style>
-</head>
-<body class="Body">
-    <div class="sidebar">
-        <div class="user-info">
-            <img class="avatar-img" src="static/uploads/avatar2.jpg" alt="Avatar" onclick="openModal('avatar-modal')">
-            <div class="username">MathPro</div>
-        </div>
-        <ul>
-            <a href="{{ url_for('qa.personalinformation') }}"><li data-content="这里是账号管理的内容">个人信息</li></a>
-            <a href="{{ url_for('qa.collection') }}"><li data-content="这里是收藏夹的内容">收藏夹</li></a>
-            <a href="{{ url_for('qa.wrongtitlebook') }}"><li data-content="这里是错题本的内容">错题本</li></a>
-        </ul>
-{#        <a href="{{ url_for('auth.logout') }}"><button class="logout-btn">退出登录</button></a>#}
-        <button class="logout-btn" onclick="logout()">退出登录</button>
-
-    </div>
-    <div class="container">
-    <div class="top-nav">
-{#        <a href="{{ url_for('qa.practicecheck') }}"><button class="button">训练场</button></a>#}
-        <a href="{{ url_for('qa.Challenges') }}"><button class="button">训练场</button></a>
-        <a href="{{ url_for('qa.ranking') }}"><button class="button">排行榜</button></a>
-        <a href="{{ url_for('qa.mindmap') }}"><button class="button">思维导图</button></a>
-        <a>
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="请输入">
-                <button class="search-button">搜索</button>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MathPro</title>
+        <link rel="stylesheet" href="{{ url_for('static',filename='css/personalpage.css')}}">
+        <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
+        <style>
+        </style>
+    </head>
+    <body class="Body">
+        <div class="sidebar">
+            <div class="user-info">
+                <img class="avatar-img" src="static/uploads/avatar2.jpg" alt="Avatar" onclick="openModal('avatar-modal')">
+                <div class="username">MathPro</div>
             </div>
-            <div class="select-container">
-                <div class="select-half">
-                    <div class="text01">知识点</div>
-                    <select class="select-box">
-                        <option value="knowledge1">1</option>
-                        <option value="knowledge2">2</option>
-                        <option value="knowledge3">3</option>
-                    </select>
+            <ul>
+                <a href="{{ url_for('qa.personalinformation') }}"><li data-content="这里是账号管理的内容">个人信息</li></a>
+                <a href="{{ url_for('qa.collection') }}"><li data-content="这里是收藏夹的内容">收藏夹</li></a>
+                <a href="{{ url_for('qa.wrongtitlebook') }}"><li data-content="这里是错题本的内容">错题本</li></a>
+            </ul>
+    {#        <a href="{{ url_for('auth.logout') }}"><button class="logout-btn">退出登录</button></a>#}
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+
+        </div>
+        <div class="container">
+        <div class="top-nav">
+    {#        <a href="{{ url_for('qa.practicecheck') }}"><button class="button">训练场</button></a>#}
+            <a href="{{ url_for('qa.Challenges') }}"><button class="button">训练场</button></a>
+            <a href="{{ url_for('qa.ranking') }}"><button class="button">排行榜</button></a>
+            <a href="{{ url_for('qa.mindmap') }}"><button class="button">思维导图</button></a>
+            <a>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="请输入">
+                    <button class="search-button">搜索</button>
                 </div>
-                <div class="select-half">
-                    <div class="text01">难易程度</div>
-                    <select class="select-box">
-                        <option value="difficult1">1</option>
-                        <option value="difficult2">2</option>
-                        <option value="difficult3">3</option>
-                        <option value="difficult4">4</option>
-                        <option value="difficult5">5</option>
-                    </select>
+                <div class="select-container">
+                    <div class="select-half">
+                        <div class="text01">知识点</div>
+                        <select class="select-box">
+                            <option value="knowledge1">1</option>
+                            <option value="knowledge2">2</option>
+                            <option value="knowledge3">3</option>
+                        </select>
+                    </div>
+                    <div class="select-half">
+                        <div class="text01">难易程度</div>
+                        <select class="select-box">
+                            <option value="difficult1">1</option>
+                            <option value="difficult2">2</option>
+                            <option value="difficult3">3</option>
+                            <option value="difficult4">4</option>
+                            <option value="difficult5">5</option>
+                        </select>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="title">
+            <div class="title_headline">
+                <h1>巩固加强 题目推荐</h1>
+                <button onclick="refreshQuestionList()" class="title_refresh">刷新</button>
+            </div>
+            {% for question in questions.items %}
+            <div class="knowledge-card">
+
+                <a href="{{ url_for('qa.titleview', id=question.id) }}"><h2 id="questionTitle">{{ question.content }}</h2><img src="{{ question.question_path }}" alt="题目图片"></a>
+                <div class="knowledge-button-container">
+                    <button type="submit" class="knowledge-button" id = "addToFavorites" onclick="addToFavorites(event,{{ question.id }})">收藏</button>
+                    <a href="{{ url_for('qa.titleview', id=question.id) }}"><button class="knowledge-button">查看</button></a>
                 </div>
             </div>
-        </a>
-    </div>
-    
-    <div class="title">
-        <div class="title_headline">
-            <h1>巩固加强 题目推荐</h1>
-            <button onclick="refreshQuestionList()" class="title_refresh">刷新</button>
-        </div>
-{#        <style>#}
-{#        .knowledge-card {#}
-{#            text-align: center;#}
-{#        }#}
-{##}
-{#        .knowledge-card img {#}
-{#            max-width: 80%; /* 图片最大宽度为父元素宽度，以保持比例 */#}
-{#            height: auto;    /* 自动计算高度，以保持比例 */#}
-            {#display: block;  /* 防止图片底部留有一些空白 */#}
-            {#margin: 0 auto;   /* 水平居中 */#}
-            {#border: 1px solid #ddd; /* 可选：添加边框效果 */#}
-            {#border-radius: 4px;     /* 可选：添加圆角效果 */#}
-            {#box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 可选：添加阴影效果 */#}
-{#        }#}
-{#    </style>#}
-        {% for question in questions.items %}
-        <div class="knowledge-card">
+            {% endfor %}
+    {#        分页#}
+            <div class="pagination">
+                {% if questions.has_prev %}
+                    <a href="{{ url_for('qa.index',page=questions.prev_num) }}">Previous</a>
+                {% endif %}
+                <span>Page{{ questions.page }} of {{ questions.pages }}</span>
+                {% if questions.has_next %}
+                    <a href="{{ url_for('qa.index',page=questions.next_num) }}">Next</a>
+                {% endif %}
+            </div>
 
-{#             <a href="{{ url_for('qa.titleview') }}"><img id="{{ question.id }}" src="{{ question.question_path }}" alt="题目图片" onclick="sendImageInfo(this.id)"></a>#}
-{#            <a href="{{ url_for('qa.titleview')+'?'+{{question.id}} }}"><img src="{{ question.question_path }}" alt="题目图片"></a>#}
-{#            question.id == {{ question.id }}#}
-            <a href="{{ url_for('qa.titleview', id=question.id) }}"><h2 id="questionTitle">{{ question.content }}</h2><img src="{{ question.question_path }}" alt="题目图片"></a>
-{#            <a href="titleview.html"><img src="{{ question.question_path }}" alt="题目图片"></a>#}
-            <div class="knowledge-button-container">
-                <button type="submit" class="knowledge-button" id = "addToFavorites" onclick="addToFavorites(event,{{ question.id }})">收藏</button>
-                <a href="{{ url_for('qa.titleview', id=question.id) }}"><button class="knowledge-button">查看</button></a>
+
+
+        </div>
+
+        <div id="avatar-modal" class="modal">
+            <div class="modal-content">
+                <h2>Change Avatar</h2>
+                <input type="file" accept="image/*">
+                <button onclick="closeModal('avatar-modal')">Close</button>
             </div>
         </div>
-        {% endfor %}
-{#        分页#}
-        <div class="pagination">
-            {% if questions.has_prev %}
-                <a href="{{ url_for('qa.index',page=questions.prev_num) }}">Previous</a>
-            {% endif %}
-            <span>Page{{ questions.page }} of {{ questions.pages }}</span>
-            {% if questions.has_next %}
-                <a href="{{ url_for('qa.index',page=questions.next_num) }}">Next</a>
-            {% endif %}
-        </div>
-
-
-{#        <div class="knowledge-card">#}
-{#            <h2>题目标题</h2>#}
-{#            <p>题目内容...</p>#}
-{#            <div class="knowledge-button-container">#}
-{#                <button class="knowledge-button" onclick="addToFavorites()">收藏</button>#}
-{#                <button class="knowledge-button" onclick="viewDetails()">查看</button>#}
-{#            </div>#}
-{#        </div>#}
-{#        <div class="knowledge-card">#}
-{#            <h2>题目标题</h2>#}
-{#            <p>题目内容...</p>#}
-{#            <div class="knowledge-button-container">#}
-{#                <button class="knowledge-button" onclick="addToFavorites()">收藏</button>#}
-{#                <button class="knowledge-button" onclick="viewDetails()">查看</button>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
-
     </div>
-
-    <div id="avatar-modal" class="modal">
-        <div class="modal-content">
-            <h2>Change Avatar</h2>
-            <input type="file" accept="image/*"> 
-            <button onclick="closeModal('avatar-modal')">Close</button>
-        </div>
-    </div>
-</div>
-    <script>
-    function addToFavorites(event, questionId) {
-        // 阻止表单默认提交行为
-        event.preventDefault();
-      // 添加到收藏夹的逻辑  用Jquery的&。ajax（）函数来发送一个POST请求
-       //var questionId="{{ questions.id }}"; // 这里填写你需要收藏的问题的ID
-        {#alert('进来了')#}
-
-        $.ajax({
-            url: '/add_to_favorites', // 这里填写你的后端接口地址
-            type: 'POST',
-            data: JSON.stringify({id: questionId}),
-            contentType: 'application/json',
-            success: function(response) {
-                // 这里处理服务器返回的响应
-                if (response.code == 200){
-                    // 收藏成功
-                    alert(response.message);
-                    window.location.href = '/collection';
-                    //修改收藏按钮的内容  变成已收藏
-                    // var button = document.getElementById("addToFavorites");
-                    // button.innerHTML = "已收藏";
-                    // button.disabled = false;
-
-                } else {
-                    // 收藏失败
-                    alert("收藏失败！");
-                }
-
-            },
-            error: function(error) {
-                // 这里处理请求失败的情况
-                alert("请求失败！")
-                console.error('Error:', error);
-            }
-        });
-    }
-  </script>
-    <script>
-    function sendImageInfo(imageId) {
-        // 获取图片信息或其他需要发送的数据
-        var imageData = {
-            id: imageId,
-            // 其他图片相关信息...
-        };
-
-        // 使用Fetch API发送请求
-        fetch('/titleview', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(imageData),
-        })
-        .then(response => response.json())
-        .then(data => {
-            // 处理从后端返回的数据
-            console.log('Received data from the server:', data);
-            // 在这里你可以根据需要执行其他操作
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
-</script>
-    
-    <script>
-        // 显示模态框
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'block';
-        }
-        // 关闭模态框
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'none';
-        }
-        function logout() {
-        // 使用 Fetch API 发送退出登录请求到后端
-        fetch('/auth/logout', {
-            method: 'POST',  // Adjust the HTTP method as needed (e.g., GET, POST)
-            headers: {
-                'Content-Type': 'application/json',
-                // Add any additional headers as needed
-            },
-            // You can include a request body if necessary
-            // body: JSON.stringify({ key: 'value' }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Handle the successful response from the server
-            //alert('退出登录成功！');
-            window.location.href = '/auth/login';
-        })
-        .catch(error => {
-            // Handle errors during the request
-            console.error('Error during logout:', error);
-            alert('退出登录失败！');
-        });
-    }
-    </script>
-
-    <script>
-        const menuItems = document.querySelectorAll('.menu-item');
-        const infoDisplay = document.querySelector('.info-area-content');
-        const accountForm = document.querySelector('.account-form');
-        menuItems.forEach(item => {
-            item.addEventListener('click', function() {
-                if (this.textContent === '账号管理') {
-                    accountForm.style.display = 'block';
-                } else {
-                    accountForm.style.display = 'none';
-                }
-            });
-        });
-        // 账号管理表单提交逻辑
-        const form = document.getElementById('accountForm');
-        form.addEventListener('submit', function(event) {
+        <script>
+        function addToFavorites(event, questionId) {
+            // 阻止表单默认提交行为
             event.preventDefault();
-            // 处理表单提交的逻辑，可以使用 JavaScript 发送到后端进行处理
-            // 这里只是示例，没有实际的后端交互
-            alert('信息已更新！');
-        });
-    </script>
-    <script>
-        function refreshQuestionList() {
-            $.ajax({
-                url: '/get_updated_questions', // replace with your actual API endpoint
-                type: 'GET',
-                success: function(response) {
-                    // Assuming the server returns an HTML string with the updated list of questions
-                    // Replace the current list of questions with the updated list
-                    alert(response)
-                    // 控制台输出
+          // 添加到收藏夹的逻辑  用Jquery的&。ajax（）函数来发送一个POST请求
+           //var questionId="{{ questions.id }}"; // 这里填写你需要收藏的问题的ID
+            {#alert('进来了')#}
 
-                   $('.knowledge-card').html(response);
-                    //$('.Body').html(response);
-                    alert('题目列表已刷新！');
+            $.ajax({
+                url: '/add_to_favorites', // 这里填写你的后端接口地址
+                type: 'POST',
+                data: JSON.stringify({id: questionId}),
+                contentType: 'application/json',
+                success: function(response) {
+                    // 这里处理服务器返回的响应
+                    if (response.code == 200){
+                        // 收藏成功
+                        alert(response.message);
+                        window.location.href = '/collection';
+                        //修改收藏按钮的内容  变成已收藏
+                        // var button = document.getElementById("addToFavorites");
+                        // button.innerHTML = "已收藏";
+                        // button.disabled = false;
+
+                    } else {
+                        // 收藏失败
+                        alert("收藏失败！");
+                    }
+
                 },
                 error: function(error) {
+                    // 这里处理请求失败的情况
+                    alert("请求失败！")
                     console.error('Error:', error);
-                    alert('Failed to refresh the question list.');
                 }
             });
-}
-</script>
-</body>
-</html>
+        }
+      </script>
+        <script>
+        function sendImageInfo(imageId) {
+            // 获取图片信息或其他需要发送的数据
+            var imageData = {
+                id: imageId,
+                // 其他图片相关信息...
+            };
+
+            // 使用Fetch API发送请求
+            fetch('/titleview', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(imageData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 处理从后端返回的数据
+                console.log('Received data from the server:', data);
+                // 在这里你可以根据需要执行其他操作
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+        <script>
+            // 显示模态框
+            function openModal(modalId) {
+                const modal = document.getElementById(modalId);
+                modal.style.display = 'block';
+            }
+            // 关闭模态框
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                modal.style.display = 'none';
+            }
+            function logout() {
+            // 使用 Fetch API 发送退出登录请求到后端
+            fetch('/auth/logout', {
+                method: 'POST',  // Adjust the HTTP method as needed (e.g., GET, POST)
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add any additional headers as needed
+                },
+                // You can include a request body if necessary
+                // body: JSON.stringify({ key: 'value' }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the successful response from the server
+                //alert('退出登录成功！');
+                window.location.href = '/auth/login';
+            })
+            .catch(error => {
+                // Handle errors during the request
+                console.error('Error during logout:', error);
+                alert('退出登录失败！');
+            });
+        }
+        </script>
+
+        <script>
+            const menuItems = document.querySelectorAll('.menu-item');
+            const infoDisplay = document.querySelector('.info-area-content');
+            const accountForm = document.querySelector('.account-form');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (this.textContent === '账号管理') {
+                        accountForm.style.display = 'block';
+                    } else {
+                        accountForm.style.display = 'none';
+                    }
+                });
+            });
+            // 账号管理表单提交逻辑
+            const form = document.getElementById('accountForm');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                // 处理表单提交的逻辑，可以使用 JavaScript 发送到后端进行处理
+                // 这里只是示例，没有实际的后端交互
+                alert('信息已更新！');
+            });
+        </script>
+        <script>
+            function refreshQuestionList() {
+                $.ajax({
+                    url: '/get_updated_questions', // replace with your actual API endpoint
+                    type: 'GET',
+                    success: function(response) {
+                        // Assuming the server returns an HTML string with the updated list of questions
+                        // Replace the current list of questions with the updated list
+                        //alert(response)
+                        // 控制台输出
+
+                      // $('.knowledge-card').html(response);
+                        //$('.Body').html(response);
+                         $('.knowledge-card').empty();
+                        response.questions.forEach(function(question) {
+                            // Create HTML for each question card
+                            var html = `
+                                <div class="knowledge-card">
+                                    <a href="/qa/titleview/${question.id}">
+                                        <h2>${question.content}</h2>
+                                        <img src="${question.question_path}" alt="题目图片">
+                                    </a>
+                                    <div class="knowledge-button-container">
+                                        <button type="submit" class="knowledge-button" onclick="addToFavorites(event, ${question.id})">收藏</button>
+                                        <a href="/qa/titleview/${question.id}"><button class="knowledge-button">查看</button></a>
+                                    </div>
+                                </div> `;
+                // Append the HTML to the container
+                                    $('.title').append(html);
+                                });
+                        alert('题目列表已刷新！');
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                        alert('Failed to refresh the question list.');
+                    }
+                });
+        }
+        </script>
+    </body>
+    </html>
 

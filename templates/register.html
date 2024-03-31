@@ -6,8 +6,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename = 'bootstrap/bootstrap.4.6.min.css') }}" />
     <script src = "{{ url_for('static',filename = 'js/register.js') }}"></script>
     <script src="{{ url_for('static', filename='jquery/jquery.3.6.min.js') }}"></script>
-
-
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -110,7 +108,7 @@
             <button type="button" id="captcha-btn" >获取验证码</button><br>
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
-            <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+{#            <input type="password" name="confirmPassword" placeholder="Confirm Password" required>#}
             <input type="submit" value="Register">
         </form>
         <div class="login-link">
@@ -119,4 +117,5 @@
     </div>
 </body>
 </html>
+
 

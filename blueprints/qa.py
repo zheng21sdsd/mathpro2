@@ -9,6 +9,9 @@ from decorators import login_required
 from werkzeug.security import generate_password_hash,check_password_hash
 from exts import db
 from models import UserModel,QuestionAnswerModel,Records,Mindmap,KnowledgePointModel
+from sqlalchemy import or_,func
+
+
 import pymysql
 # from decorators import login_required
 # from models import UserModel,Image
@@ -49,12 +52,12 @@ def index():
 ### 更新题目
 @bp.route('/get_updated_questions', methods=['GET'])
 def get_updated_questions():
-    print(2)
+    # print(2)
     # Query the database to get the updated list of questions
     # This is just a placeholder, replace with your actual query
     ### 推荐算法
     #### 1.获取题目未加入限定条件（即获取全部题目 需修改）
-    questions = db.session.query(QuestionAnswerModel).all()
+    # questionss = db.session.query(QuestionAnswerModel).all()[10:15]
     #### 2.xxxx
     #### 3.xxxx
 
@@ -65,7 +68,32 @@ def get_updated_questions():
     # questions_data = [question.to_dict() for question in questions]
     # Return the HTML string
     ### questions为推荐题目
-    return render_template('mainpage.html', questions=questions)
+    # return render_template('mainpage.html', questions=questions)
+
+    # Convert the questions to a list of dictionaries
+    # questions = [question.to_dict() for question in questionss]
+
+    ### 根据 scores  konwledge_level type_level题型水平  来获取题目
+
+    ##
+    questionss= db.session.query(QuestionAnswerModel).all()
+    questions = []
+    for question in questionss:
+        question_dict = {
+            'id': question.id,
+            'content': question.content,
+            'question_path': question.question_path,
+            # 其他属性
+        }
+        questions.append(question_dict)
+
+    # 返回 JSON 格式的数据
+
+    print('-----------------------questions-----------------------')
+    print(questions)
+    return jsonify(questions=questions)
+    #
+    # return jsonify(questions=questions)
 
 ##################### 存储头像  放到数据库中
 @bp.route('/ranking',methods = ['GET','POST'])
@@ -74,10 +102,37 @@ def get_updated_questions():
 ### 写一个排行榜单页面的后端逻辑代码
 def ranking():
     ### 请求？？？？写不写
-    # # 查询用户排行榜数据，按得分降序排列
-    user_rank = db.session.query(UserModel).order_by(UserModel.score.desc()).all()
+    ## 按照user_answer_path  或者user_answer_content存在进行计数 然后进行排序得到user_rank
+
+    user_rank = db.session.query(
+        UserModel.id,
+        UserModel.name,
+        func.count().label('count')
+    ).join(
+        Records, UserModel.id == Records.user_id
+    ).filter(
+        or_(Records.user_answer_path != '', Records.user_answer_content != '')
+    ).group_by(
+        UserModel.id,
+        UserModel.name
+    ).order_by(
+        func.count().desc()
+    ).all()
+    # user_rank = db.session.query(
+    #     Records.user_id,
+    #     func.count().label('count')
+    # ).filter(
+    #     or_(Records.user_answer_path != '', Records.user_answer_content != '')
+    # ).group_by(Records.user_id).order_by(func.count().desc()).all()
+    print(user_rank)
+    # print('user_rank',user_rank[0].count)
+    current_user_rank = 0
+    for i in range(len(user_rank)):
+        if user_rank[i].id==g.user.id:
+            current_user_rank = i+1
+    print(user_rank)
+
     # 为了获取我的排名
-    current_user_rank = user_rank.index(g.user)+1
     # 总人数
     total_user = len(user_rank)
     # 我的排名/总人数
@@ -184,6 +239,17 @@ def titleview():
     # 查询数据库获取题目信息
     question = QuestionAnswerModel.query.get(id)
     if question:
+        # 如果Records没有记录这个题目  就增加Records一行数据与 包含question_answer_id 和user_id
+        # record = Records.query.filter_by(Records.question_answer_id==id, Records.user_id == g.user.id).first()  filter_by() takes 1 positional argument but 3 were given
+        record = Records.query.filter(Records.question_answer_id == id, Records.user_id == g.user.id).first()
+
+        if not record:
+            # 如果没有记录这个题目，就增加一行数据到 Records 表中
+            # new_record = Records(Records.question_answer_id==id, Records.user_id==g.user.id)  # 假设 g.user 包含了当前用户的信息
+            new_record = Records(question_answer_id=id, user_id=g.user.id)
+
+            db.session.add(new_record)
+            db.session.commit()
         # 如果找到了题目，将题目信息传递给模板进行渲染
         return render_template('titleview.html', question=question)
     else:
@@ -212,19 +278,18 @@ def titlescore():
         print('-----------------------GET进来了-----------------------')
         question_answer_id = request.args.get('question_id')
         print(f'-----------------------question_answer_id为{question_answer_id}-----------------------')
-        # user_answer_content = db.session.query(Records.user_answer_content).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).all()[0][0]
-        # user_answer_path = db.session.query(Records.user_answer_path).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).all()[0][0]
-        # print('user_answer_content',user_answer_content)#user_answer_content [('跳转',)]
-        # print('user_answer_path',user_answer_path)#user_answer_path [('uploads\\Snipaste_2024-03-09_17-58-37.png',)]
+
         questions_infos = db.session.query(QuestionAnswerModel).filter(QuestionAnswerModel.id == question_answer_id).all()
         # print('questions_infos[0]',questions_infos[0])
         question_path = questions_infos[0].question_path
         answer_path = questions_infos[0].answer_path
+        print('question_path', question_path)
+        print('answer_path', answer_path)
         scores = db.session.query(Records.scores).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).all()[0][0]
+        # scores = db.session.query(Records.scores).filter(Records.question_answer_id == question_answer_id,Records.user_id == g.user.id).all()[0][0]
 
         # model为类字典对象
-        print('question_path',question_path)
-        print('answer_path',answer_path)
+
         print('scores',scores)
         return render_template('titlescore.html',question_path = question_path,answer_path = answer_path,question_answer_id = question_answer_id,scores = scores)
     else:
@@ -234,8 +299,54 @@ def titlescore():
         questionId = data.get('questionId')
         print('scores',scores)
         print('questionId',questionId)
+        if int(scores)<100:
+            # 查看题目类型  并计算得分   查看知识点类型  并计算知识点得分 查看用户能力值  并计算用户得分
+            questioninfo = db.session.query(QuestionAnswerModel).filter(QuestionAnswerModel.id == questionId).all()
+            question_type = questioninfo[0].question_type
+            knowledge_point = questioninfo[0].knowledge_point
+            question_difficulty = questioninfo[0].difficulty
+            print('question_type',question_type,'knowledge_point',knowledge_point,'question_difficulty',question_difficulty)
+
+            userInfo = db.session.query(UserModel).filter(UserModel.id == g.user.id).all()
+
+            # type_level
+            type_bias = 1
+            if question_type == '选择题':
+                userInfo[0].Multiple_choice_level = userInfo[0].Multiple_choice_level + type_bias
+            elif question_type == '填空题':
+                userInfo[0].Fill_blanks_level = userInfo[0].Fill_in_the_blank_level + type_bias
+            elif  question_type == '解答题':
+                userInfo[0].Short_ansewr_level = userInfo[0].Short_ansewr_level + type_bias
+            else:
+                pass
+
+            #
+            db.session.query(UserModel).filter(
+                UserModel.id == g.user.id,
+                Records.question_answer_id == questionId
+            ).update({
+                UserModel.Multiple_choice_level:userInfo[0].Multiple_choice_level,
+                UserModel.Fill_blanks_level:userInfo[0].Fill_blanks_level,
+                UserModel.Short_ansewr_level:userInfo[0].Short_ansewr_level
+            })
+            db.session.commit()
+            ## konwledge_point_level
+            ### 处理知识点
+            pass
+            ## scores level
+            pass
+
+
+
+
+
+
+
+
+
         db.session.query(Records).filter(Records.question_answer_id == questionId,Records.user_id == g.user.id).update({Records.scores:scores})
         db.session.commit()
+
         return jsonify({'code': 200, 'message': '打分成功！','questionId':questionId})
 
 # 添加错题
@@ -536,7 +647,7 @@ def collection():
     ### 取消收藏的POST放给另一个路由cancel_to_favorites去做了
     if request.method == 'GET':
         ### 从record表中获取收藏的数据
-        records = db.session.query(Records).filter(Records.favorite == 1).all()
+        records = db.session.query(Records).filter(Records.favorite == 1,Records.user_id ==g.user.id).all()
         question_answer_ids = [record.question_answer_id for record in records]
         print('-----------------------question_answer_ids-----------------------')
         print(question_answer_ids)

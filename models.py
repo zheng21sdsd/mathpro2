@@ -14,11 +14,13 @@ class UserModel(db.Model):
     school = db.Column(db.String(100), nullable=True) # 属性或者列名一般都是（类别，可不可空，default = “”缺省值）
     major = db.Column(db.String(100), nullable=True)  ## 专业
     avatar = db.Column(db.String(100), nullable=True)  ## 头像路径
-    score = db.Column(db.Integer, default=0)  ## 默认积分为0
-
-
+    score = db.Column(db.Integer, default=50)  ## 默认积分为0 就是user_level
+    Multiple_choice_level = db.Column(db.Integer, default=50)  # 多选题
+    Fill_blanks_level = db.Column(db.Integer, default=50)  # 填空题
+    Short_answer_level = db.Column(db.Integer, default=50)  # 简答题
     join_time = db.Column(db.DateTime,default=datetime.now)#datatime.now这个表示调用这个函数
                                                          # datatime.now（）是一个值 不是调用函数
+
 
     # user_question_num = db.Column(db.Integer, default=0)  # 提问数
 class EmailCaptchaModel(db.Model):
@@ -70,6 +72,16 @@ class QuestionAnswerModel(db.Model):
     knowledge_point = db.Column(db.Integer, db.ForeignKey('knowledge_point.id'))  # 题目知识点
     question_type = db.Column(db.String(50), nullable=True)  # 题目类型，选择题，填空题，解答题
 
+    # def to_dict(self):
+    #     """
+    #     将 QuestionAnswerModel 对象转换为字典格式
+    #     """
+    #     return {
+    #         'id': self.id,
+    #         'content': self.content,
+    #         'question_path': self.question_path,
+    #         # 其他属性
+    #     }
 
 
 class Records(db.Model):
@@ -160,3 +172,18 @@ class Mindmap(db.Model):
 #
 #     question_answer = db.relationship('QuestionAnswerModel', backref='records')
 #     user = db.relationship('UserModel', backref='records')
+class user_knowledge_level(db.Model):
+    __tablename__ = 'user_knowledge_level'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    knowledge_point_id = db.Column(db.Integer, nullable=True)
+    user_id = db.Column(db.Integer,nullable=True)
+    knowledge_point_name = db.Column(db.String(255), nullable=True)
+    # knowledge_point_name = db.Column(db.String(255), nullable=False)
+    knowledge_parent_point = db.Column(db.Integer, default=-1)
+    # 1为属于  0为不属于
+    mathone = db.Column(db.Integer, default=0)
+    mathtwo = db.Column(db.Integer, default=0)
+    maththree = db.Column(db.Integer, default=0)
+    subject_type = db.Column(db.String(255), nullable=True)  # 高数 线代 概率论
+    knowledge_point_level = db.Column(db.Integer, default=50)  # 高数 线代 概率论

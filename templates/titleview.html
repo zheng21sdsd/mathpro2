@@ -129,6 +129,7 @@
         submitButton.addEventListener('click', function() {
           const textValue = document.getElementById('text-answer').value.trim();
           const questionId = document.getElementById('question_id').value;
+
           if (textValue === '' && imageFiles.length === 0) {
             alert('请输入文字题答案或上传图片');
             return;
@@ -139,18 +140,9 @@
           imageFiles.forEach((file, index) => {
             formData.append('imageFiles[' + index + ']', file);
           });
-
-
-          //alert(formData)
-          // textValue 就是用户输入的文字 imageFiles 就是用户上传的图片
-          // 提交逻辑
-          // 这里可以添加提交逻辑，比如通过 AJAX 将数据提交给服务器
-           // alert('imageFiles')
-           // alert(imageFiles.length)
-           // alert(imageFiles);
            event.preventDefault();
             $.ajax({
-                url: '/submit_answer?questionId=questionId', // 这里填写你的后端接口地址
+                url: '/submit_answer?questionId='+questionId, // 这里填写你的后端接口地址
                 type: 'POST',
                 data:formData,
                 //data: JSON.stringify({textValue: textValue,imageFiles: imageFiles}),
@@ -162,7 +154,6 @@
                     if (response.code == 200){
                         // 收藏成功
                         alert(response.message);
-                        //alert('提交成功！');
                         // 进行跳转到其他页面
                         window.location.href = '/titlescore?question_id='+questionId
                     } else {

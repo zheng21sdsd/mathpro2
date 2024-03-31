@@ -7,7 +7,7 @@ import string
 import random
 from flask import redirect
 from flask import jsonify
-from models import UserModel,EmailCaptchaModel
+from models import UserModel,EmailCaptchaModel,KnowledgePointModel,user_knowledge_level
 from .forms import RegisterForm,Loginform
 from werkzeug.security import generate_password_hash,check_password_hash   #加密密码
 
@@ -27,15 +27,27 @@ def register():
             email = form.email.data
             password = form.password.data
             username = form.username.data
+            print('email',email)
+            print('password',password)
             # 取消掉加密
             # user = UserModel(email = email,password = generate_password_hash(password),name=username)
             user = UserModel(email = email,password = password,name=username)
             db.session.add(user)
             db.session.commit()
+            #
+            knowledgePointInfos= db.session.query(KnowledgePointModel).all()
+            for knowledgePointInfo in knowledgePointInfos:
+                print('konwledgePointInfo',knowledgePointInfo)
+                print('konwledgePointInfo.id',knowledgePointInfo.id)
+                knowledge_user = user_knowledge_level(user_id = user.id,knowledge_point_id = knowledgePointInfo.id,knowledge_point_name = knowledgePointInfo.knowledge_point_name,knowledge_parent_point = knowledgePointInfo.knowledge_parent_point,mathone = knowledgePointInfo.mathone,mathtwo = knowledgePointInfo.mathtwo,maththree = knowledgePointInfo.maththree)
+                db.session.add(knowledge_user)
+            db.session.commit()
             return redirect(url_for('auth.login'))
         else:
-            print('**************************')
+            print('form.errors')
             print(form.errors)
+            # return redirect(url_for('auth.login'))
+
             return redirect(url_for('auth.register'))
 
 @bp.route('/login',methods = ['GET','POST'])
