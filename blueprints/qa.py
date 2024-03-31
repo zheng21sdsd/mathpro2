@@ -74,10 +74,9 @@ def get_updated_questions():
     ### 根据 scores  konwledge_level type_level题型水平  来获取题目
 
     ##
+    #user_level,knowledge_level = (id,0,0)
     #for all questions
-    #   if question_type == user_lowest_type_level
-    #       (level,(1,2,3,4,5,...,n),(1,2,3))  *  (difficulty,(0,0,0,1.,..,0),(1,0,0))
-    #           
+    #
     #
     #
     #
