@@ -1,3 +1,4 @@
+import numpy as np
 import pymysql
 ## 导入蓝图
 from flask import (Blueprint, g, jsonify, redirect, render_template, request,
@@ -74,8 +75,24 @@ def get_updated_questions():
     ### 根据 scores  konwledge_level type_level题型水平  来获取题目
 
     ##
-    #user_level,knowledge_level = (id,0,0)
-    #for all questions
+    #user_level
+    #user_knowledge_level = length(n) [50,50,50,50,......,50]      ( knowlege_num = n)
+    #user_type_level = length(3) [50,50,50]
+    
+#for all question in questions
+    #question_level = questionlevel*20
+    #question_knowledge = length(n) [1,0,0,0,......,0]      (knowledge_id = 1, knowlege_num = n)
+    #question_type = length(3) [1,0,0]      (type_id = 1, type_num = 3)
+#       
+    #level_dot = userlevel*questionlevel
+    #knowlege_dot = dot(user_knowledge_level, question_knowledge)
+    #type_dot = dot(user_type_level, question_type)
+    #dot_sum = level_dot + knowlege_dot + type_dot
+    #
+    #cos[] = dot_sum/(mod(level_dot)+mod(knowlege_dot)+mod(type_dot))
+    #
+    #for all question in questions
+    #   recommend the highest three cos[] question
     #
     #
     #
