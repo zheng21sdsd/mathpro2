@@ -75,7 +75,9 @@ def get_updated_questions():
 
     ### 根据 scores  konwledge_level type_level题型水平  来获取题目
 
-    ##
+    ##  获取数据
+    questioninfos = db.session.query(QuestionAnswerModel).all()
+
     questionss= db.session.query(QuestionAnswerModel).all()
     questions = []
     for question in questionss:
