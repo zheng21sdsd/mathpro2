@@ -8,8 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from decorators import login_required
 from exts import db
-from models import (KnowledgePointModel, Mindmap, QuestionAnswerModel, Records,
-                    UserModel, user_knowledge_level)
+from models import KnowledgePointModel, Mindmap, QuestionAnswerModel, Records,UserModel, user_knowledge_level
 
 # from decorators import login_required
 # from models import UserModel,Image
@@ -256,7 +255,6 @@ def titleview():
             # 如果没有记录这个题目，就增加一行数据到 Records 表中
             # new_record = Records(Records.question_answer_id==id, Records.user_id==g.user.id)  # 假设 g.user 包含了当前用户的信息
             new_record = Records(question_answer_id=id, user_id=g.user.id)
-
             db.session.add(new_record)
             db.session.commit()
         # 如果找到了题目，将题目信息传递给模板进行渲染
@@ -313,32 +311,35 @@ def titlescore():
         questioninfo = db.session.query(QuestionAnswerModel).filter(QuestionAnswerModel.id == questionId).all()
         question_type = questioninfo[0].question_type
         knowledge_point = questioninfo[0].knowledge_point
-        question_difficulty = questioninfo[0].difficulty
+        question_difficulty = int(questioninfo[0].difficulty.split('难度')[1])
         print('question_type',question_type,'knowledge_point',knowledge_point,'question_difficulty',question_difficulty)
 
         userInfo = db.session.query(UserModel).filter(UserModel.id == g.user.id).all()
-        knowledge_point_level = db.session.query(user_knowledge_level).filter(user_knowledge_level.user_id == g.user.id)
+        knowledge_point_level = db.session.query(user_knowledge_level).filter(user_knowledge_level.user_id == g.user.id).all()
+        print('userInfo',userInfo)
+        print('knowledge_point_level',knowledge_point_level)
 
 
-
-        userlevel = userInfo[0].score
+        userlevel = int(userInfo[0].score)
         if int(scores)<100:
             #对应题型水平↓
             # type_level
             type_bias = 1
             if question_type == '选择题':
-                userInfo[0].Multiple_choice_level = userInfo[0].Multiple_choice_level - type_bias
+                userInfo[0].Multiple_choice_level = int(userInfo[0].Multiple_choice_level) - type_bias
             elif question_type == '填空题':
-                userInfo[0].Fill_blanks_level = userInfo[0].Fill_in_the_blank_level - type_bias
+                userInfo[0].Fill_blanks_level = int(userInfo[0].Fill_blanks_level) - type_bias
             elif  question_type == '解答题':
-                userInfo[0].Short_answer_level = userInfo[0].Short_answer_level - type_bias
+                userInfo[0].Short_answer_level = int(userInfo[0].Short_answer_level) - type_bias
             else:
                 pass
+            knowlevel = []  ## 知识点level 更新容器
             #对应知识点水平减少
-            for  knowledge in  knowledge_point_level:
-                if knowledge[0].knowledge_point_id == knowledge_point:
-                    knowledge[0].knowlege_point_level =knowledge[0].knowledge_point_level-type_bias
-                
+            for  knowledge in knowledge_point_level:
+                if knowledge.knowledge_point_id == knowledge_point:
+                    knowledge.knowlege_point_level =knowledge.knowledge_point_level-type_bias
+                    knowlevel.append(knowledge.knowlege_point_level)
+
             #用户能力值↓
             #0-20分段特殊处理
             if userInfo[0].score <=20:
@@ -356,18 +357,20 @@ def titlescore():
             if question_type == '选择题':
                 userInfo[0].Multiple_choice_level = userInfo[0].Multiple_choice_level + type_bias
             elif question_type == '填空题':
-                userInfo[0].Fill_blanks_level = userInfo[0].Fill_in_the_blank_level + type_bias
+                userInfo[0].Fill_blanks_level = userInfo[0].Fill_blanks_level + type_bias
             elif  question_type == '解答题':
                 userInfo[0].Short_answer_level = userInfo[0].Short_answer_level + type_bias
             else:
                 pass
 
             #对应知识点水平增加
+            knowlevel = []
             for  knowledge in  knowledge_point_level:
                 if knowledge[0].knowledge_point_id == knowledge_point:
                     knowledge[0].knowlege_point_level =knowledge[0].knowledge_point_level+type_bias
-
+                    knowlevel.append(knowledge.knowlege_point_level)
             #用户能力水平↑
+            print('knowlevel',knowlevel)
                     #0-20分段做特殊处理
             if userInfo[0].score <=20: 
                 userInfo[0].score = userInfo[0].score +1+question_difficulty
@@ -378,39 +381,30 @@ def titlescore():
                 else:#小于100分按照给分公式增加能力值
                     userInfo[0].score = userInfo[0].score + 20*question_difficulty/userlevel
             #
-            db.session.query(UserModel).filter(
-                UserModel.id == g.user.id,
-                Records.question_answer_id == questionId
-                
-            ).update({
-                UserModel.Multiple_choice_level:userInfo[0].Multiple_choice_level,
-                UserModel.Fill_blanks_level:userInfo[0].Fill_blanks_level,
-                UserModel.Short_answer_level:userInfo[0].Short_answer_level,
-                UserModel.score:userInfo[0].score,
+        db.session.query(UserModel).filter(
+            UserModel.id == g.user.id,
 
-            })
+        ).update({
+            UserModel.Multiple_choice_level:userInfo[0].Multiple_choice_level,
+            UserModel.Fill_blanks_level:userInfo[0].Fill_blanks_level,
+            UserModel.Short_answer_level:userInfo[0].Short_answer_level,
+            UserModel.score:userInfo[0].score,
 
+        })
+        db.session.commit()
+        print('更新完成user表')
+
+        # 更新知识点水平
+        for i in knowlevel:
             db.session.query(user_knowledge_level).filter(
                 user_knowledge_level.user_id ==g.user.id,
-                user_knowledge_level.knowledge_point_id == question_type
+                user_knowledge_level.knowledge_point_id == knowledge_point
             ).update({
-                user_knowledge_level.knowledge_point_level:knowledge[0].knowledge_point_level
+                user_knowledge_level.knowledge_point_level:i
             })
-            db.session.commit()
-            ## konwledge_point_level
-            ### 处理知识点
-            pass
-            ## scores level
-            pass
-
-
-
-
-
-
-
-
-
+        db.session.commit()
+        print('更新完成knowledge表')
+        print('更新完成题目分数表')
         db.session.query(Records).filter(Records.question_answer_id == questionId,Records.user_id == g.user.id).update({Records.scores:scores})
         db.session.commit()
 

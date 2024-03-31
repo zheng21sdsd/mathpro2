@@ -300,7 +300,7 @@ body {
 }
 
 .title_refresh{
-    position: fixed; /* 设置为固定定位 */
+    position: absolute; /* 设置为固定定位 */
     top: 185px; 
     right: 120px; 
     width: 120px;
