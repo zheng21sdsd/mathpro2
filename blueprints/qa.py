@@ -74,7 +74,18 @@ def get_updated_questions():
     ### 根据 scores  konwledge_level type_level题型水平  来获取题目
 
     ##
+    #for all questions
+    #   if question_type == user_lowest_type_level
+    #       (level,(1,2,3,4,5,...,n),(1,2,3))  *  (difficulty,(0,0,0,1.,..,0),(1,0,0))
+    #           
+    #
+    #
+    #
     questionss= db.session.query(QuestionAnswerModel).all()
+    
+
+
+
     questions = []
     for question in questionss:
         question_dict = {
@@ -83,6 +94,7 @@ def get_updated_questions():
             'question_path': question.question_path,
             # 其他属性
         }
+    
         questions.append(question_dict)
 
     # 返回 JSON 格式的数据
